@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <title>Runequest-Gestion PNJ</title>
+    <link rel="stylesheet" href="PNJ.css">
+</head>
+<body>
+    <header>
+        <h1>Runequest</h1>
+    </header>
+    
+    <nav>
+    </nav>
+    
+    <section>
+        <div id="list">
+            <label for="race">Choix de la race : </label>
+            <select id="race" name="races">
+                <option value="" disabled selected id="valeurOrigine">-- Sélectionnez une race --</option>
+                <option value="humain">Humain</option>
+                <optgroup label="Aldryami">
+                    <option value="coureur">Coureur</option>
+                    <option value="dryad">Dryade</option>
+                    <option value="elfBleu">Elfe bleu</option>
+                    <option value="elfBrun">Elfe brun</option>
+                    <option value="elfJaune">Elfe jaune</option>
+                    <option value="elfNoir">Elfe noir</option>
+                    <option value="elfVert">Elfe vert</option>
+                    <option value="pixie">Pixie</option>
+                </optgroup>
+                <option value="archer">Archer de Pierrevierge</option>
+                <option value="babouin">Babouin</option>
+                <optgroup label="Hommes bêtes">
+                    <option value="canard">Canard</option>
+                    <option value="centaure">Centaure</option>
+                    <option value="femmeRen">Femme-renard (humaine)</option>
+                    <option value="femRenard">Femme-renard (renard)</option>
+                    <option value="manticore">Manticore</option>
+                    <option value="minotaure">Minotaure</option>
+                    <option value="satyre">Satyre</option>
+                </optgroup>
+                <optgroup label="Dragonewts">
+                    <option value="dragCret">Dragonewt à crête</option>
+                    <option value="dragBec">Dragonewt à bec</option>
+                    <option value="pretreQueue">Prêtre à queue (dragonewt)</option>
+                    <option value="pretreAile">Prêtre ailé (dragonewt)</option>
+                </optgroup>
+                <option value="enfantVent">Enfant du vent</option>
+                <option value="frereLoup">Frère-loup (humain)</option>
+                <option value="frerLoup">Frère-loup (loup)</option>
+                <option value="geant">Géant</option>
+                <option value="gorille">Gorille</option>
+                <option value="hommeDemi">Homme-et-demi</option>
+                <option value="monteSanglier">Monteur de sanglier</option>
+                <option value="morokanth">Morokanth</option>
+                <optgroup label="Mostali">
+                    <option value="mostali">Mostali</option>
+                    <option value="gobeur">Gobeur</option>
+                    <option value="jolanti">Jolanti</option>
+                    <option value="nilmerg">Nilmerg</option>
+                </optgroup>
+                
+                <option value=""></option>
+                <option value=""></option>
+                <option value=""></option>
+                <option value=""></option>
+                <option value=""></option>
+            </select>
+        </div>
+        <div id="tout">
+            <div id="caracs">
+            <h2>Caracteristiques</h2>
+            <div class="input-container">
+            <div>
+                <label for="str">FOR</label>
+                <input type="number" id="str" name="FOR" placeholder="FOR">
+                <div id="strDice" class="diceNum">3d6</div>
+            </div>
+            <div>
+                <label for="con">CON</label>
+                <input type="number" id="con" name="CON" placeholder="CON">
+                <div id="conDice" class="diceNum">3d6</div>
+            </div>
+            <div>
+                <label for="tai">TAI</label>
+                <input type="number" id="tai" name="TAI" placeholder="TAI">
+                <div id="taiDice" class="diceNum">2d6+6</div>
+            </div>
+            <div>
+                <label for="dex">DEX</label>
+                <input type="number" id="dex" name="DEX" placeholder="DEX">
+                <div id="dexDice" class="diceNum">3d6</div>
+            </div>
+            <div>
+                <label for="int">INT</label>
+                <input type="number" id="int" name="INT" placeholder="INT">
+                <div id="intDice" class="diceNum">2d6+6</div>
+            </div>
+            <div>
+                <label for="pou">POU</label>
+                <input type="number" id="pou" name="POU" placeholder="POU">
+                <div id="pouDice" class="diceNum">3d6</div>
+            </div>
+            <div>
+                <label for="cha">CHA</label>
+                <input type="number" id="cha" name="CHA" placeholder="CHA">
+                <div id="chaDice" class="diceNum">3d6</div>
+            </div>
+            </div>
+            <div>
+            <button type="button" id="boutonRecherche" style="display: none;">Valider</button>
+            <button type="button" id="boutonAleatoire" style="display: none;">Générer des valeurs aléatoires</button>
+            <button type="button" id="boutonReset" style="display: none;">Reset</button>
+            </div>
+    
+            <div id="derivCar">
+            <div class="categorie">
+                <h3>Points de vie</h3>
+                <div id="pv"></div>
+                <div id="vitGuer"></div>
+            </div>
+            <div class="categorie">
+                <h3>Combat</h3>
+                <div id="rangTai"></div>
+                <div id="rangDex"></div>
+                <div id="bonDeg"></div>
+                <div id="degSpi"></div>
+            </div>
+            <div class="categorie">
+                <h3>Autres</h3>
+                <div id="pm"></div>
+                <div id="enc"></div>
+                <div id="mvt"></div>
+            </div>
+            <div class="categorie">
+                <h3>Mods de compétences</h3>
+                <div id="agi"></div>
+                <div id="com"></div>
+                <div id="conn"></div>
+                <div id="mag"></div>
+                <div id="man"></div>
+                <div id="per"></div>
+                <div id="dis"></div>
+            </div>
+            </div>
+            </div>
+
+            <div id="locaTableau">
+                <div id="tableLoca">
+                    <div id="loca" class="colonLoca">
+                        <div class="titreLoca">Localisation</div>
+                    </div>
+                    <div id="dVingt" class="colonLoca">
+                        <div class="titreLoca">D20</div>
+                    </div>
+                    <div id="arm" class="colonLoca">
+                        <div class="titreLoca">Armure</div>
+                    </div>
+                    <div id="pvLoca" class="colonLoca">
+                        <div class="titreLoca">PV</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Copyright ReyTexef - Tous droits réservés<br /></p>
+    </footer>
+    <script src="PNJ.js"></script>
+</body>
+</html>

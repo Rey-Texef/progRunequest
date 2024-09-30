@@ -1,0 +1,225 @@
+/* Styles généraux */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+/* En-tête */
+header {
+    text-align: center;
+    background-color: #9B1B30;
+    color: white;
+    padding: 10px 0;
+}
+
+/* Section principale */
+section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+#tout {
+    display: flex;
+    width: 100%;
+}
+
+/* Titres de section */
+h2 {
+    color: #9B1B30;
+}
+
+/* Conteneur pour les inputs et labels */
+.input-container {
+    display: flex; /* Utilisation de flexbox pour aligner les inputs et labels */
+    flex-wrap: wrap; /* Permet aux éléments de passer à la ligne si l'espace est insuffisant */
+    align-items: center; /* Aligne les éléments au centre verticalement */
+}
+
+/* Inputs */
+.input-container div {
+    margin-right: 10px; /* Espacement entre les champs */
+    display: flex; /* Pour permettre l'alignement des labels avec les inputs */
+    flex-direction: column; /* Aligne le label au-dessus de l'input */
+    align-items: center; /* Centre le label et l'input horizontalement */
+}
+
+.diceNum {
+    margin-top: 20px;
+}
+
+input[type="number"] {
+    width: 60px; /* Largeur fixe pour donner une forme carrée */
+    height: 60px; /* Hauteur fixe pour donner une forme carrée */
+    font-size: 15px; /* Taille de police de 15 pixels */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: center; /* Centrer le texte à l'intérieur */
+}
+
+/* Labels */
+label {
+    margin-bottom: 5px; /* Espacement entre le label et l'input */
+}
+
+/* Conteneur pour les boutons */
+.button-container {
+    display: flex; /* Utilisation de flexbox pour aligner les boutons sur une ligne */
+    margin-top: 20px; /* Espacement supérieur pour séparer des champs d'entrée */
+}
+
+/* Boutons */
+button {
+    background-color: #9B1B30;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 20px; /* Espacement entre les boutons */
+    margin-top: 50px;
+}
+
+button:hover {
+    background-color: #7A141D; /* Couleur au survol */
+}
+
+h3 {
+    color: #666666;
+    text-decoration: underline;
+    font-size: 20px;
+}
+
+/* Affichage des PV */
+.categorie div {
+    margin-top: 10px;
+    font-weight: bold;
+    background-color: #e7f3fe; /* Couleur d'arrière-plan pour les résultats */
+    padding: 10px;
+    border-radius: 4px;
+    text-align: right;
+}
+
+#derivCar {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.categorie {
+    border: 2px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    margin-right: 20px;
+    margin-top: 50px;
+    text-align: center;
+    height: fit-content;
+    width: fit-content;
+}
+
+/* Style global pour le conteneur */
+#list {
+    margin: 20px;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Style pour le label */
+#list label {
+    font-size: 1.2em;
+    color: #333;
+    margin-right: 10px;
+}
+
+/* Style général pour la liste déroulante */
+#race {
+    padding: 10px;
+    font-size: 1em;
+    color: #333;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 250px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Effet lors du survol (hover) */
+#race:hover {
+    background-color: #e0e0e0;
+    border-color: #999;
+}
+
+/* Style lorsque l'option est sélectionnée */
+#race:focus {
+    outline: none;
+    border-color: #666;
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Style pour le groupe d'options (optgroup) */
+#race optgroup {
+    font-weight: bold;
+    color: #444;
+    background-color: #f7f7f7;
+    margin-top: 5px;
+    padding: 5px;
+}
+
+/* Style pour les options */
+#race option {
+    padding: 5px;
+    font-size: 1em;
+    color: #333;
+    background-color: #fff;
+    transition: all 0.3s ease;
+}
+
+/* Effet lors du survol des options */
+#race option:hover {
+    background-color: #ddd;
+}
+
+/* Désactiver les options non sélectionnables */
+#race option[disabled] {
+    color: #999;
+}
+
+/* Style pour l'option sélectionnée par défaut */
+#race option[selected] {
+    color: #555;
+    background-color: #f0f0f0;
+}
+
+#tableLoca {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: row;
+}
+
+.colonLoca {
+    border: 1px solid #0a0000;
+    width: 200px;
+    text-align: center;
+}
+
+.titreLoca {
+    background-color: #056334;
+    color: #ddd;
+    font-weight: bold;
+}
+
+.celLoca {
+    border-bottom: 1px solid #0a0000;
+}
+
+#mvt {
+    display: none;
+}
