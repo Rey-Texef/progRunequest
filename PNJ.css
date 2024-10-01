@@ -53,7 +53,7 @@ h2 {
     margin-top: 20px;
 }
 
-input[type="number"] {
+.inputCarac {
     width: 60px; /* Largeur fixe pour donner une forme carrée */
     height: 60px; /* Hauteur fixe pour donner une forme carrée */
     font-size: 15px; /* Taille de police de 15 pixels */
@@ -205,8 +205,6 @@ h3 {
 }
 
 .colonLoca {
-    border: 1px solid #0a0000;
-    width: 200px;
     text-align: center;
 }
 
@@ -216,10 +214,51 @@ h3 {
     font-weight: bold;
 }
 
-.celLoca {
-    border-bottom: 1px solid #0a0000;
-}
-
 #mvt {
     display: none;
+}
+
+.titreLoca, .celLoca, .celLocaPlus {
+    border: 1px solid #0a0000;
+    height: 50px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centrage horizontal */
+    align-items: center;     /* Centrage vertical */
+}
+
+#loca {
+    width: 120px;
+}
+
+#dVingt {
+    width: 60px;
+}
+
+#arm {
+    width: 70px;
+}
+
+#pvLoca {
+    width: 50px;
+}
+
+#armBon {
+    width: 100px;
+}
+
+#degats {
+    width: 100px;
+}
+
+#condition {
+    width: 100px;
+}
+
+.celLocaPlus input {
+    width: 50px;    /* Ajuster la largeur */
+    height: 25px;   /* Ajuster la hauteur */
+    font-size: 12px; /* Ajuster la taille de la police */
+    padding: 2px;   /* Ajuster l'espace intérieur si nécessaire */
 }

@@ -1,3 +1,7 @@
+// Etat du perso
+let inconscient = false;
+let mort = false;
+
 // Fonction pour réinitialiser les valeurs lors du chargement de la page
 window.onload = function() {
     document.getElementById("str").value = "";
@@ -44,6 +48,10 @@ window.onload = function() {
 
     effacerDivsLoca()
     hideDiv()
+
+    // Réinitialise les états
+    inconscient = false;
+    mort = false;
 }
 
 // Données de dés en fonction des races
@@ -2026,6 +2034,8 @@ function afficherPV() {
     // Affichage des PV dans les différentes divs
     document.getElementById("pv").innerHTML = "PV Total : " + pv;
     document.getElementById("vitGuer").innerHTML = "Vitesse guérison : " + vitGuer;
+
+    
 }
 
 // Fonction pour afficher les Rangs d'actions de Tai et de DEX
@@ -2621,6 +2631,9 @@ function genererLocalisations(race) {
     const dVingtDiv = document.getElementById("dVingt");
     const armDiv = document.getElementById("arm");
     const pvDiv = document.getElementById("pvLoca");
+    const armBonDiv = document.getElementById("armBon");
+    const degDiv = document.getElementById("degats");
+    const conDiv = document.getElementById("condition");
 
     // Récupérer les données associées à la race choisie
     const raceData = raceDiceData[race];
@@ -2648,6 +2661,9 @@ function genererLocalisations(race) {
     dVingtDiv.innerHTML = '<div class="titreLoca">D20</div>';
     armDiv.innerHTML = '<div class="titreLoca">Armure</div>';
     pvDiv.innerHTML = '<div class="titreLoca">PV</div>';
+    armBonDiv.innerHTML = '<div class="titreLoca">Armure bonus</div>';
+    degDiv.innerHTML = '<div class="titreLoca">Dégâts</div>';
+    conDiv.innerHTML = '<div class="titreLoca">Conditions</div>';
 
     // Parcourir les localisations
     localisationKeys.forEach(key => {
@@ -2677,33 +2693,58 @@ function genererLocalisations(race) {
     });
 
     armKeys.forEach(key => {
-        const value = raceData[key];
-        if (value !== "") { // Si la valeur n'est pas vide
-            // Créer une nouvelle div avec la classe 'celLoca'
+        const value = parseInt(raceData[key], 10); // Conversion de la valeur de raceData en nombre
+        if (!isNaN(value)) { // Si la valeur est un nombre valide
+            // Créer une nouvelle div avec la classe 'celLoca' pour l'armure
             const newDiv = document.createElement("div");
             newDiv.className = "celLoca";
-            newDiv.textContent = value;
-
-            // Ajouter la nouvelle div dans l'élément locaDiv
+            newDiv.textContent = value; // Afficher la valeur de base
+    
+            // Créer une div pour le bonus d'armure avec un input
+            const plusDiv = document.createElement("div");
+            plusDiv.className = "celLocaPlus";
+    
+            // Créer un input de type number pour le bonus
+            const bonusInput = document.createElement("input");
+            bonusInput.type = "number";
+            bonusInput.value = 0; // Valeur par défaut
+    
+            // Fonction pour mettre à jour l'armure avec le bonus
+            function updateArmure() {
+                const bonusValue = parseInt(bonusInput.value, 10); // Récupérer la valeur de l'input
+                if (!isNaN(bonusValue)) {
+                    newDiv.textContent = value + bonusValue; // Mise à jour avec bonus
+                }
+            }
+    
+            // Écouter les changements sur l'input
+            bonusInput.addEventListener("input", updateArmure);
+    
+            // Ajouter l'input à la div plusDiv
+            plusDiv.appendChild(bonusInput);
+    
+            // Ajouter la nouvelle div dans les éléments correspondants
             armDiv.appendChild(newDiv);
+            armBonDiv.appendChild(plusDiv);
         }
     });
+    
 
     pvKeys.forEach(key => {
-        const value = raceData[key];
-        if (value !== "") { // Si la valeur n'est pas vide
-            let pvMembre = 0;
-            if (value == "a") {
+        const value = raceData[key]; // Garde la valeur sous forme de chaîne de caractères pour les comparaisons
+        let pvMembre = 0;
+        if (value !== "") {
+            if (value === "a") {
                 pvMembre = Math.ceil(pv / 3);
                 if (pvMembre < 2) {
                     pvMembre = 2;
                 }
-            } else if (value == "b") {
+            } else if (value === "b") {
                 pvMembre = Math.ceil(pv / 3) + 1;
                 if (pvMembre < 3) {
                     pvMembre = 3;
                 }
-            } else if (value == "c") {
+            } else if (value === "c") {
                 pvMembre = Math.ceil(pv / 3) - 1;
                 if (pvMembre < 1) {
                     pvMembre = 1;
@@ -2714,15 +2755,47 @@ function genererLocalisations(race) {
                     pvMembre = 1;
                 }
             }
-            // Créer une nouvelle div avec la classe 'celLoca'
+        
+            // Créer une nouvelle div avec la classe 'celLoca' pour les pv
             const newDiv = document.createElement("div");
             newDiv.className = "celLoca";
-            newDiv.textContent = pvMembre;
+            newDiv.textContent = pvMembre; // Afficher la valeur de base
+        
+            // Créer une div pour le malus de PV avec un input
+            const plusDiv = document.createElement("div");
+            plusDiv.className = "celLocaPlus";
+        
+            // Créer un input de type number pour le malus
+            const malusInput = document.createElement("input");
+            malusInput.type = "number";
+            malusInput.value = 0; // Valeur par défaut
+        
+            // Fonction pour mettre à jour les pv avec le malus
+            function updatePv() {
+                const malusValue = parseInt(malusInput.value, 10); // Récupérer la valeur de l'input
+                if (!isNaN(malusValue)) {
+                    const pvAvecMalus = pvMembre - malusValue;
+                    newDiv.textContent = pvAvecMalus;
+                }
+            }
 
-            // Ajouter la nouvelle div dans l'élément locaDiv
+            // Créer une div pour les conditions
+            const divCondi = document.createElement("div");
+            divCondi.className = "celLoca";
+        
+            // Écouter les changements sur l'input
+            malusInput.addEventListener("input", updatePv);
+        
+            // Ajouter l'input à la div plusDiv
+            plusDiv.appendChild(malusInput);
+        
+            // Ajouter la nouvelle div dans les éléments correspondants
             pvDiv.appendChild(newDiv);
+            degDiv.appendChild(plusDiv);
+            conDiv.appendChild(divCondi);
         }
     });
+    
 
 }
 
@@ -2739,12 +2812,19 @@ document.getElementById("race").addEventListener("change", function() {
 function effacerDivsLoca() {
     // Sélectionner toutes les div ayant la classe 'celLoca'
     const celLoca = document.querySelectorAll('.celLoca');
+    const celLocaPlus = document.querySelectorAll('.celLocaPlus');
     
     // Parcourir chaque div et supprimer son contenu
     celLoca.forEach(function(div) {
         div.innerHTML = ""; // Effacer le contenu de chaque div
     });
     celLoca.forEach(function(div) {
+        div.remove(); // Supprimer complètement la div
+    });
+    celLocaPlus.forEach(function(div) {
+        div.innerHTML = ""; // Effacer le contenu de chaque div
+    });
+    celLocaPlus.forEach(function(div) {
         div.remove(); // Supprimer complètement la div
     });
 }
@@ -2772,3 +2852,49 @@ function hideDiv() {
     const div = document.getElementById("mvt");
     div.style.display = "none";  // Rend la div invisible
 }
+
+// Écouter l'événement click sur le bouton d'attaque
+const atkButton = document.getElementById("atk");
+atkButton.addEventListener("click", () => {
+    // Récupérer la div avec l'ID 'degats'
+    const degatsDiv = document.getElementById("degats");
+
+    // Récupérer tous les inputs enfants de cette div
+    const inputs = degatsDiv.querySelectorAll("input");
+
+    // Initialiser la variable pour stocker le total des dégâts
+    let degatTotal = 0;
+
+    // Parcourir chaque input et additionner sa valeur au total
+    inputs.forEach(input => {
+        const valeur = parseInt(input.value, 10); // Convertir la valeur de l'input en nombre
+        if (!isNaN(valeur)) { // Vérifier si la conversion a réussi
+            degatTotal += valeur; // Ajouter la valeur au total
+        }
+    });
+
+    // Mettre à jour les PV
+    pv -= degatTotal;
+
+    // Afficher les nouveaux PV
+    document.getElementById("pv").innerHTML = "PV Total : " + pv;
+
+    // Vérification santé
+    if (pv < 3) {
+        if (pv < 1) {
+            mort = true;
+            alert("MORT");
+        } else {
+            inconscient = true;
+            alert("Inconscience");
+        }
+    }
+
+    // remise à zéro des inputs
+    inputs.forEach(input => {
+        input.value = 0; // Réinitialiser la valeur de chaque input à 0
+    });
+});
+
+
+
