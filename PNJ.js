@@ -1,6 +1,9 @@
 // Etat du perso
 let inconscient = false;
 let mort = false;
+let choc = false;
+let ko = false;
+let detruit = false;
 
 // Fonction pour réinitialiser les valeurs lors du chargement de la page
 window.onload = function() {
@@ -46,12 +49,16 @@ window.onload = function() {
     document.getElementById("pouDice").innerHTML = "";
     document.getElementById("chaDice").innerHTML = "";
 
-    effacerDivsLoca()
-    hideDiv()
+    effacerDivsLoca();
+    hideDiv();
+    etatPerso(pv);
 
     // Réinitialise les états
     inconscient = false;
     mort = false;
+    choc = false;
+    ko = false;
+    detruit = false;
 }
 
 // Données de dés en fonction des races
@@ -107,6 +114,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "coureur": {
@@ -160,6 +177,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "dryad": {
@@ -213,6 +240,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "elfBleu": {
@@ -266,6 +303,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "",
+        locaImportDeux: "",
+        locaImportTrois: "",
+        locaImportQuatre: "",
+        locaImportCinq: "",
+        locaImportSix: "",
+        locaImportSept: "",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "elfBrun": {
@@ -319,6 +366,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "elfJaune": {
@@ -372,6 +429,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "elfNoir": {
@@ -425,6 +492,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "elfVert": {
@@ -478,6 +555,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "pixie": {
@@ -531,6 +618,16 @@ const raceDiceData = {
         locaPvHuit: "c",
         locaPvNeuf: "a",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "i",
+        locaImportHuit: "i",
+        locaImportNeuf: "k",
+        locaImportDix: "",
         plus: ""
     },
     "archer": {
@@ -584,6 +681,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "",
+        locaImportDeux: "",
+        locaImportTrois: "",
+        locaImportQuatre: "",
+        locaImportCinq: "",
+        locaImportSix: "",
+        locaImportSept: "",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "babouin": {
@@ -637,6 +744,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "",
+        locaImportDeux: "",
+        locaImportTrois: "",
+        locaImportQuatre: "",
+        locaImportCinq: "",
+        locaImportSix: "",
+        locaImportSept: "",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "canard": {
@@ -690,6 +807,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "centaure": {
@@ -743,6 +870,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "",
+        locaImportDeux: "",
+        locaImportTrois: "",
+        locaImportQuatre: "",
+        locaImportCinq: "",
+        locaImportSix: "",
+        locaImportSept: "",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "femmeRen": {
@@ -796,6 +933,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "femRenard": {
@@ -849,6 +996,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "",
+        locaImportDeux: "",
+        locaImportTrois: "",
+        locaImportQuatre: "",
+        locaImportCinq: "",
+        locaImportSix: "",
+        locaImportSept: "",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "manticore": {
@@ -902,6 +1059,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "",
+        locaImportDeux: "",
+        locaImportTrois: "",
+        locaImportQuatre: "",
+        locaImportCinq: "",
+        locaImportSix: "",
+        locaImportSept: "",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "minotaure": {
@@ -955,6 +1122,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "satyre": {
@@ -1008,6 +1185,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "dragCret": {
@@ -1061,6 +1248,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "",
+        locaImportDeux: "",
+        locaImportTrois: "",
+        locaImportQuatre: "",
+        locaImportCinq: "",
+        locaImportSix: "",
+        locaImportSept: "",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "dragBec": {
@@ -1114,6 +1311,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "",
+        locaImportDeux: "",
+        locaImportTrois: "",
+        locaImportQuatre: "",
+        locaImportCinq: "",
+        locaImportSix: "",
+        locaImportSept: "",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "pretreQueue": {
@@ -1167,6 +1374,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "",
+        locaImportDeux: "",
+        locaImportTrois: "",
+        locaImportQuatre: "",
+        locaImportCinq: "",
+        locaImportSix: "",
+        locaImportSept: "",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "pretreAile": {
@@ -1220,6 +1437,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "",
+        locaImportDeux: "",
+        locaImportTrois: "",
+        locaImportQuatre: "",
+        locaImportCinq: "",
+        locaImportSix: "",
+        locaImportSept: "",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "enfantVent": {
@@ -1273,6 +1500,16 @@ const raceDiceData = {
         locaPvHuit: "c",
         locaPvNeuf: "a",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "i",
+        locaImportHuit: "i",
+        locaImportNeuf: "k",
+        locaImportDix: "",
         plus: ""
     },
     "frereLoup": {
@@ -1326,6 +1563,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "frerLoup": {
@@ -1379,6 +1626,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "",
+        locaImportDeux: "",
+        locaImportTrois: "",
+        locaImportQuatre: "",
+        locaImportCinq: "",
+        locaImportSix: "",
+        locaImportSept: "",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "geant": {
@@ -1432,6 +1689,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "gorille": {
@@ -1485,6 +1752,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "hommeDemi": {
@@ -1538,6 +1815,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "monteSanglier": {
@@ -1591,6 +1878,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "morokanth": {
@@ -1644,6 +1941,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "mostali": {
@@ -1697,6 +2004,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "gobeur": {
@@ -1750,6 +2067,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "",
+        locaImportDeux: "",
+        locaImportTrois: "",
+        locaImportQuatre: "",
+        locaImportCinq: "",
+        locaImportSix: "",
+        locaImportSept: "",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "jolanti": {
@@ -1803,6 +2130,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "nilmerg": {
@@ -1856,6 +2193,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "i",
+        locaImportDeux: "i",
+        locaImportTrois: "ik",
+        locaImportQuatre: "h",
+        locaImportCinq: "i",
+        locaImportSix: "i",
+        locaImportSept: "k",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
     "": {
@@ -1909,6 +2256,16 @@ const raceDiceData = {
         locaPvHuit: "",
         locaPvNeuf: "",
         locaPvDix: "",
+        locaImportUn: "",
+        locaImportDeux: "",
+        locaImportTrois: "",
+        locaImportQuatre: "",
+        locaImportCinq: "",
+        locaImportSix: "",
+        locaImportSept: "",
+        locaImportHuit: "",
+        locaImportNeuf: "",
+        locaImportDix: "",
         plus: ""
     },
 };
@@ -2566,6 +2923,7 @@ document.getElementById("boutonRecherche").addEventListener("click", function na
     afficherAutres();
     afficherModComp();
     genererLocalisations(raceChoisie);
+    etatPerso(pv);
 });
 
 // Fonction pour générer un nombre entier aléatoire entre min et max inclus
@@ -2618,15 +2976,18 @@ document.getElementById("boutonAleatoire").addEventListener("click", function() 
     afficherAutres();
     afficherModComp();
     genererLocalisations(raceChoisie);
+    etatPerso(pv);
 });
 
 
 // Bouton reset pour remettre à zero
 document.getElementById("boutonReset").addEventListener("click", window.onload)
 
+let pertePv = 0;
+
 // Fonction pour générer les localisations dynamiquement
 function genererLocalisations(race) {
-    // Sélectionner l'élément HTML où insérer les localisations
+    // Sélectionner les éléments HTML où insérer les localisations
     const locaDiv = document.getElementById("loca");
     const dVingtDiv = document.getElementById("dVingt");
     const armDiv = document.getElementById("arm");
@@ -2638,23 +2999,12 @@ function genererLocalisations(race) {
     // Récupérer les données associées à la race choisie
     const raceData = raceDiceData[race];
 
-    // Liste des clés des localisations à vérifier
-    const localisationKeys = [
-        "locaUn", "locaDeux", "locaTrois", "locaQuatre", "locaCinq",
-        "locaSix", "locaSept", "locaHuit", "locaNeuf", "locaDix"
-    ];
-    const dVingtKeys = [
-        "locaNumUn","locaNumDeux","locaNumTrois","locaNumQuatre","locaNumCinq",
-        "locaNumSix","locaNumSept","locaNumHuit","locaNumNeuf","locaNumDix"
-    ];
-    const armKeys = [
-        "locaArmUn", "locaArmDeux", "locaArmTrois", "locaArmQuatre", "locaArmCinq",
-        "locaArmSix", "locaArmSept", "locaArmHuit", "locaArmNeuf", "locaArmDix"
-    ]
-    const pvKeys = [
-        "locaPvUn", "locaPvDeux", "locaPvTrois", "locaPvQuatre", "locaPvCinq",
-        "locaPvSix", "locaPvSept", "locaPvHuit", "locaPvNeuf", "locaPvDix", 
-    ]
+    // Listes des clés associées aux différentes informations
+    const localisationKeys = ["locaUn", "locaDeux", "locaTrois", "locaQuatre", "locaCinq", "locaSix", "locaSept", "locaHuit", "locaNeuf", "locaDix"];
+    const dVingtKeys = ["locaNumUn", "locaNumDeux", "locaNumTrois", "locaNumQuatre", "locaNumCinq", "locaNumSix", "locaNumSept", "locaNumHuit", "locaNumNeuf", "locaNumDix"];
+    const armKeys = ["locaArmUn", "locaArmDeux", "locaArmTrois", "locaArmQuatre", "locaArmCinq", "locaArmSix", "locaArmSept", "locaArmHuit", "locaArmNeuf", "locaArmDix"];
+    const pvKeys = ["locaPvUn", "locaPvDeux", "locaPvTrois", "locaPvQuatre", "locaPvCinq", "locaPvSix", "locaPvSept", "locaPvHuit", "locaPvNeuf", "locaPvDix"];
+    const importKeys = ["locaImportUn", "locaImportDeux", "locaImportTrois", "locaImportQuatre", "locaImportCinq", "locaImportSix", "locaImportSept", "locaImportHuit", "locaImportNeuf", "locaImportDix"];
 
     // Vider les anciennes localisations
     locaDiv.innerHTML = '<div class="titreLoca">Localisation</div>';
@@ -2666,138 +3016,121 @@ function genererLocalisations(race) {
     conDiv.innerHTML = '<div class="titreLoca">Conditions</div>';
 
     // Parcourir les localisations
-    localisationKeys.forEach(key => {
-        const value = raceData[key];
-        if (value !== "") { // Si la valeur n'est pas vide
-            // Créer une nouvelle div avec la classe 'celLoca'
-            const newDiv = document.createElement("div");
-            newDiv.className = "celLoca";
-            newDiv.textContent = value;
+    localisationKeys.forEach((key, index) => {
+        const loca = raceData[key];
+        const dVingt = raceData[dVingtKeys[index]];
+        const armure = parseInt(raceData[armKeys[index]], 10);
+        const pvType = raceData[pvKeys[index]];
+        const importMembre = raceData[importKeys[index]];
+        let pvMembre = calculerPvMembre(pvType); // Calcul des PV du membre en fonction du type "a", "b", etc.
 
-            // Ajouter la nouvelle div dans l'élément locaDiv
-            locaDiv.appendChild(newDiv);
-        }
-    });
+        // Ajouter les localisations et D20
+        if (loca) {
+            ajouterCellule(locaDiv, loca);
+            ajouterCellule(dVingtDiv, dVingt || "");
 
-    dVingtKeys.forEach(key => {
-        const value = raceData[key];
-        if (value !== "") { // Si la valeur n'est pas vide
-            // Créer une nouvelle div avec la classe 'celLoca'
-            const newDiv = document.createElement("div");
-            newDiv.className = "celLoca";
-            newDiv.textContent = value;
-
-            // Ajouter la nouvelle div dans l'élément dVingtDiv
-            dVingtDiv.appendChild(newDiv);
-        }
-    });
-
-    armKeys.forEach(key => {
-        const value = parseInt(raceData[key], 10); // Conversion de la valeur de raceData en nombre
-        if (!isNaN(value)) { // Si la valeur est un nombre valide
-            // Créer une nouvelle div avec la classe 'celLoca' pour l'armure
-            const newDiv = document.createElement("div");
-            newDiv.className = "celLoca";
-            newDiv.textContent = value; // Afficher la valeur de base
-    
-            // Créer une div pour le bonus d'armure avec un input
-            const plusDiv = document.createElement("div");
-            plusDiv.className = "celLocaPlus";
-    
-            // Créer un input de type number pour le bonus
-            const bonusInput = document.createElement("input");
-            bonusInput.type = "number";
-            bonusInput.value = 0; // Valeur par défaut
-    
-            // Fonction pour mettre à jour l'armure avec le bonus
-            function updateArmure() {
-                const bonusValue = parseInt(bonusInput.value, 10); // Récupérer la valeur de l'input
-                if (!isNaN(bonusValue)) {
-                    newDiv.textContent = value + bonusValue; // Mise à jour avec bonus
-                }
-            }
-    
-            // Écouter les changements sur l'input
-            bonusInput.addEventListener("input", updateArmure);
-    
-            // Ajouter l'input à la div plusDiv
-            plusDiv.appendChild(bonusInput);
-    
-            // Ajouter la nouvelle div dans les éléments correspondants
-            armDiv.appendChild(newDiv);
-            armBonDiv.appendChild(plusDiv);
-        }
-    });
-    
-
-    pvKeys.forEach(key => {
-        const value = raceData[key]; // Garde la valeur sous forme de chaîne de caractères pour les comparaisons
-        let pvMembre = 0;
-        if (value !== "") {
-            if (value === "a") {
-                pvMembre = Math.ceil(pv / 3);
-                if (pvMembre < 2) {
-                    pvMembre = 2;
-                }
-            } else if (value === "b") {
-                pvMembre = Math.ceil(pv / 3) + 1;
-                if (pvMembre < 3) {
-                    pvMembre = 3;
-                }
-            } else if (value === "c") {
-                pvMembre = Math.ceil(pv / 3) - 1;
-                if (pvMembre < 1) {
-                    pvMembre = 1;
-                }
-            } else {
-                pvMembre = Math.ceil(pv / 3) - 2;
-                if (pvMembre < 1) {
-                    pvMembre = 1;
-                }
-            }
-        
-            // Créer une nouvelle div avec la classe 'celLoca' pour les pv
-            const newDiv = document.createElement("div");
-            newDiv.className = "celLoca";
-            newDiv.textContent = pvMembre; // Afficher la valeur de base
-        
-            // Créer une div pour le malus de PV avec un input
-            const plusDiv = document.createElement("div");
-            plusDiv.className = "celLocaPlus";
-        
-            // Créer un input de type number pour le malus
-            const malusInput = document.createElement("input");
-            malusInput.type = "number";
-            malusInput.value = 0; // Valeur par défaut
-        
-            // Fonction pour mettre à jour les pv avec le malus
-            function updatePv() {
-                const malusValue = parseInt(malusInput.value, 10); // Récupérer la valeur de l'input
-                if (!isNaN(malusValue)) {
-                    const pvAvecMalus = pvMembre - malusValue;
-                    newDiv.textContent = pvAvecMalus;
-                }
+            // Ajouter l'armure
+            if (!isNaN(armure)) {
+                const armDivElem = ajouterCellule(armDiv, armure);
+                const bonusInput = ajouterInput(armBonDiv, 0);
+                bonusInput.addEventListener("input", () => {
+                    const bonus = parseInt(bonusInput.value, 10) || 0;
+                    armDivElem.textContent = armure + bonus; // Mise à jour avec bonus
+                });
             }
 
-            // Créer une div pour les conditions
-            const divCondi = document.createElement("div");
-            divCondi.className = "celLoca";
-        
-            // Écouter les changements sur l'input
-            malusInput.addEventListener("input", updatePv);
-        
-            // Ajouter l'input à la div plusDiv
-            plusDiv.appendChild(malusInput);
-        
-            // Ajouter la nouvelle div dans les éléments correspondants
-            pvDiv.appendChild(newDiv);
-            degDiv.appendChild(plusDiv);
-            conDiv.appendChild(divCondi);
+            // Ajouter les PV et gérer les malus
+            const pvDivElem = ajouterCellule(pvDiv, pvMembre);
+            const malusInput = ajouterInput(degDiv, 0);
+            const condiElem = ajouterCellule(conDiv, ""); // Élément condition
+
+            malusInput.addEventListener("input", () => {
+                malusValue = parseInt(malusInput.value, 10) || 0;
+                let pvAvecMalus = pvMembre - malusValue;
+
+                // Limiter les dégâts au double des PV max
+                const limiteDegats = pvMembre * 2;
+                pvAvecMalus = Math.max(pvAvecMalus, -pvMembre); // Les PV ne peuvent pas descendre en dessous du PV max en négatif
+                pvAvecMalus = Math.max(pvAvecMalus, -limiteDegats); // Les dégâts ne peuvent pas dépasser deux fois les PV max du membre
+                pertePv = Math.min(malusValue, limiteDegats);
+
+                if (malusValue >= pvMembre * 3) {
+                    if (importMembre === "i") {
+                        // Action spéciale pour localisation critique (membre tranché)
+                        condiElem.textContent = "Membre tranché";
+                        ko = true;
+                    } else if (importMembre === "k" || importMembre === "h" || importMembre === "ik") {
+                        // Mort si les dégâts dépassent 3 fois les PV max pour des localisations mortelles
+                        condiElem.textContent = "Détruit";
+                        detruit = true;
+                    }
+                } else if (malusValue >= pvMembre * 2) {
+                    if (importMembre === "i") {
+                        choc = true;
+                        condiElem.textContent = "Etat de choc";
+                    } else if (importMembre === "k" || importMembre === "h" || importMembre === "ik") {
+                        ko = true;
+                        condiElem.textContent = "Hémorragie";
+                    }
+                } else if (pvAvecMalus <= pvMembre * -2){
+                    if (importMembre === "ik" || importMembre === "k" || importMembre === "h") {
+                        condiElem;textContent = "Blessure grave";
+                        ko = true;
+                    } else if (importMembre === "i") {
+                        condiElem.textContent = "Membre inutilisable";
+                    }
+                } else if (pvAvecMalus <= 0) {
+                    if (importMembre === "i" || importMembre === "ik") {
+                        condiElem.textContent = "Membre inutilisable";
+                    } else if (importMembre === "h") {
+                        condiElem.textContent = "Hemorragie interne";
+                        choc = true;
+                    } else if (importMembre === "k") {
+                        ko = true;
+                    }
+                } else {
+                    condiElem.textContent = "Normal";
+                }
+
+                pvDivElem.textContent = Math.max(pvAvecMalus, -pvMembre); // Affichage des PV restants, avec minimum fixé à PV max en négatif
+                mettreAJourConditions(condiElem, pvAvecMalus, pvMembre);
+
+            });
         }
     });
-    
 
+    // Fonctions auxiliaires
+    function ajouterCellule(parentDiv, textContent) {
+        const newDiv = document.createElement("div");
+        newDiv.className = "celLoca";
+        newDiv.textContent = textContent;
+        parentDiv.appendChild(newDiv);
+        return newDiv;
+    }
+
+    function ajouterInput(parentDiv, defaultValue) {
+        const inputDiv = document.createElement("div");
+        inputDiv.className = "celLocaPlus";
+        const input = document.createElement("input");
+        input.type = "number";
+        input.value = defaultValue;
+        inputDiv.appendChild(input);
+        parentDiv.appendChild(inputDiv);
+        return input;
+    }
+
+    function calculerPvMembre(type) {
+        let basePv = Math.ceil(pv / 3);
+        switch (type) {
+            case "a": return Math.max(basePv, 2);
+            case "b": return Math.max(basePv + 1, 3);
+            case "c": return Math.max(basePv - 1, 1);
+            default: return Math.max(basePv - 2, 1);
+        }
+    }
 }
+
+
 
 let raceChoisie = "";
 
@@ -2856,45 +3189,64 @@ function hideDiv() {
 // Écouter l'événement click sur le bouton d'attaque
 const atkButton = document.getElementById("atk");
 atkButton.addEventListener("click", () => {
-    // Récupérer la div avec l'ID 'degats'
-    const degatsDiv = document.getElementById("degats");
-
-    // Récupérer tous les inputs enfants de cette div
-    const inputs = degatsDiv.querySelectorAll("input");
-
-    // Initialiser la variable pour stocker le total des dégâts
-    let degatTotal = 0;
-
-    // Parcourir chaque input et additionner sa valeur au total
-    inputs.forEach(input => {
-        const valeur = parseInt(input.value, 10); // Convertir la valeur de l'input en nombre
-        if (!isNaN(valeur)) { // Vérifier si la conversion a réussi
-            degatTotal += valeur; // Ajouter la valeur au total
-        }
-    });
-
     // Mettre à jour les PV
-    pv -= degatTotal;
+    pv -= pertePv;
+    pertePv = 0;
 
     // Afficher les nouveaux PV
     document.getElementById("pv").innerHTML = "PV Total : " + pv;
-
-    // Vérification santé
-    if (pv < 3) {
-        if (pv < 1) {
-            mort = true;
-            alert("MORT");
-        } else {
-            inconscient = true;
-            alert("Inconscience");
-        }
-    }
 
     // remise à zéro des inputs
     inputs.forEach(input => {
         input.value = 0; // Réinitialiser la valeur de chaque input à 0
     });
+
+    etatPerso(pv)
 });
 
+// Fonction pour vérifier l'état du perso et l'afficher
+function etatPerso(pv) {
+    // Vérification santé
+    if (ko == true) {
+        inconscient = true;
+    } else if (detruit == true) {
+        mort = true;
+    } else if (choc == true) {
+        // Vérifier si la div "horsCombat" existe déjà
+        if (!document.getElementById("horsCombat")) {
+            // Sélectionner la div parent "mortConsc"
+            const mortConscDiv = document.getElementById("mortConsc");
+
+            // Créer une nouvelle div "Hors combat"
+            const horsCombatDiv = document.createElement("div");
+            horsCombatDiv.id = "horsCombat";
+            horsCombatDiv.textContent = "Hors combat";
+
+            // Ajouter la nouvelle div en tant qu'enfant de "mortConsc"
+            mortConscDiv.appendChild(horsCombatDiv);
+        }
+    } else if (pv > 2) {
+        mort = false;
+        inconscient = false;
+    } else if (pv < 1) {
+        mort = true;
+        inconscient = true;
+    } else if (pv < 3) {
+        mort = false;
+        inconscient = true;
+    } 
+
+    if (mort == false) {
+        document.getElementById("mort").innerHTML = "Vivant";
+    } else {
+        document.getElementById("mort").innerHTML = "Mourant";
+    }
+
+    if (inconscient == false) {
+        document.getElementById("inconsc").innerHTML = "Conscient";
+    } else {
+        document.getElementById("inconsc").innerHTML = "Inconscient";
+    }
+}
 
 
