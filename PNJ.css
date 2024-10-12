@@ -262,3 +262,137 @@ h3 {
     font-size: 12px; /* Ajuster la taille de la police */
     padding: 2px;   /* Ajuster l'espace intérieur si nécessaire */
 }
+
+/* Style pour le texte qui a un tooltip */
+.tooltip {
+    position: relative;
+    cursor: pointer;
+    color: rgba(114, 3, 3, 0.75);
+}
+
+/* Style de base du tooltip */
+.tooltip::before {
+    content: attr(data-tooltip); /* Récupère le texte du tooltip */
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none; /* Le tooltip ne gênera pas le survol */
+    top: 50%; /* Position au-dessus de l'élément */
+    left: 50%;
+    transform: translateX(-50%, -50%);
+    z-index: 10;
+    font-size: 0.9em;
+}
+
+/* Afficher le tooltip lors du survol */
+.tooltip:hover::before {
+    opacity: 1;
+}
+
+#atk {
+    margin: 20px 10px;
+}
+
+/* Classe pour l'effet de flash rouge */
+.flash-red {
+    background-color: rgba(255, 0, 0, 0.5); /* Couleur rouge avec transparence */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999; /* S'assurer que le flash recouvre tout */
+    pointer-events: none; /* Désactiver les interactions avec le flash */
+}
+
+.flashGreen {
+    background-color: rgba(79, 255, 88, 0.5); /* Couleur rouge avec transparence */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999; /* S'assurer que le flash recouvre tout */
+    pointer-events: none; /* Désactiver les interactions avec le flash */
+}
+
+/* Transition douce pour le flash */
+.fade-out {
+    animation: fadeout 0.3s forwards;
+}
+
+@keyframes fadeout {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.boutonSoin, .boutonStop {
+    margin-left: 20px;
+}
+
+.boutonStop {
+    color: #7272726b;
+}
+
+.inputSoin {
+    width: 30px;
+}
+
+.soinDivSoin {
+    margin-left: 20px;
+}
+
+/* Style du modal (initialement caché) */
+.modal {
+    display: none; /* Cacher le modal par défaut */
+    position: fixed; /* Positionnement fixe */
+    z-index: 1; /* Pour rester au-dessus des autres éléments */
+    left: 0;
+    top: 0;
+    width: 100%; /* Largeur de la page entière */
+    height: 100%; /* Hauteur de la page entière */
+    background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
+}
+
+/* Contenu du modal */
+.modal-content {
+    background-color: white;
+    margin: 15% auto; /* Centrer verticalement et horizontalement */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%; /* Largeur de la fenêtre */
+    text-align: center;
+}
+
+/* Bouton de fermeture */
+.close {
+    color: red;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: darkred;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.ligneModal {
+    margin: 30px;
+    display: flex;
+}
+
+.modalInput {
+    width: 25px;    /* Ajuster la largeur */
+    height: 25px;   /* Ajuster la hauteur */
+    font-size: 12px; /* Ajuster la taille de la police */
+    position: absolute;
+    left: 50%;
+}

@@ -3,9 +3,12 @@
 <head>
     <meta charset="utf-8" />
     <title>Runequest-Gestion PNJ</title>
-    <link rel="stylesheet" href="PNJ.css">
+    <link rel="stylesheet" href="pnj.css">
 </head>
 <body>
+    <audio id="atkSound" src="sonAtk.mp3"></audio>
+    <audio id="soinSound" src="sonSoin.mp3"></audio>
+    <audio id="sonDouleur" src="sonDouleur.mp3"></audio>
     <header>
         <h1>Runequest</h1>
     </header>
@@ -174,14 +177,40 @@
                         <div class="titreLoca">Conditions</div>
                     </div>
                 </div>
+                <div id="divBoutons">
                 <button type="button" id="atk">Attaque</button>
+                <button type="button" id="resetResume">Clear résumé</button>
+                <button type="button" id="soinHub">Guérison</button>
+                </div>
+                <div id="resume">
+                    <div>Résumé des blessures</div>
+                </div>
             </div>
         </div>
+        <!-- Le modal (caché par défaut) -->
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+            <span id="closeModalBtn" class="close">&times;</span>
+            <div id="contenuModal">
+                <div id="modal1" class="ligneModal"></div>
+                <div id="modal2" class="ligneModal"></div>
+                <div id="modal3" class="ligneModal"></div>
+                <div id="modal4" class="ligneModal"></div>
+                <div id="modal5" class="ligneModal"></div>
+                <div id="modal6" class="ligneModal"></div>
+                <div id="modal7" class="ligneModal"></div>
+                <div id="modal8" class="ligneModal"></div>
+                <div id="modal9" class="ligneModal"></div>
+                <div id="modal10" class="ligneModal"></div>
+                <button id="boutonModale">Soin</button>
+            </div>
+        </div>
+    </div>
     </section>
 
     <footer>
         <p>Copyright ReyTexef - Tous droits réservés<br /></p>
     </footer>
-    <script src="PNJ.js"></script>
+    <script src="pnj.js"></script>
 </body>
 </html>

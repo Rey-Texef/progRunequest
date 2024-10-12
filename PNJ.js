@@ -1,3 +1,5 @@
+// Variables
+
 // Etat du perso
 let inconscient = false;
 let mort = false;
@@ -5,63 +7,44 @@ let choc = false;
 let ko = false;
 let detruit = false;
 
-// Fonction pour réinitialiser les valeurs lors du chargement de la page
-window.onload = function() {
-    document.getElementById("str").value = "";
-    document.getElementById("con").value = "";
-    document.getElementById("tai").value = "";
-    document.getElementById("dex").value = "";
-    document.getElementById("int").value = "";
-    document.getElementById("pou").value = "";
-    document.getElementById("cha").value = "";
-    
-    // Réinitialiser l'affichage des caracs secondaires
-    document.getElementById("pv").innerHTML = "";
-    document.getElementById("vitGuer").innerHTML = "";
-    document.getElementById("rangTai").innerHTML = "";
-    document.getElementById("rangDex").innerHTML = "";
-    document.getElementById("bonDeg").innerHTML = "";
-    document.getElementById("degSpi").innerHTML = "";
-    document.getElementById("enc").innerHTML = "";
-    document.getElementById("pm").innerHTML = "";
-    document.getElementById("agi").innerHTML = "";
-    document.getElementById("com").innerHTML = "";
-    document.getElementById("conn").innerHTML = "";
-    document.getElementById("mag").innerHTML = "";
-    document.getElementById("man").innerHTML = "";
-    document.getElementById("per").innerHTML = "";
-    document.getElementById("dis").innerHTML = "";
-    document.getElementById("mvt").innerHTML = "";
+let membreTouche = '';
+let race = "";
+let pv = 0;
+let newPv = 0;
+let pvActuel = 0;
+let tableauPvActuel = [];  // Créer un tableau vide pour stocker les valeurs de pvActuel
+let pertePv = 0;
+let agi = 0;
+let com = 0;
+let conn = 0;
+let mag = 0;
+let man = 0;
+let per = 0;
+let dis = 0;
+let valeurs = recupVal();
+let compteurBoutonSoin = 0;
 
-    // Remet la première option de la liste sélectionnée
-    document.getElementById("race").selectedIndex = 0;
-    document.getElementById("boutonRecherche").style.display = "none";
-    document.getElementById("boutonAleatoire").style.display = "none";
-    document.getElementById("boutonReset").style.display = "none";
+// Sélectionner les éléments HTML où insérer les localisations
+const locaDiv = document.getElementById("loca");
+const dVingtDiv = document.getElementById("dVingt");
+const armDiv = document.getElementById("arm");
+const pvDiv = document.getElementById("pvLoca");
+const armBonDiv = document.getElementById("armBon");
+const degDiv = document.getElementById("degats");
+const conDiv = document.getElementById("condition");
 
-    // Remet les D6 à 0
-    
-    document.getElementById("strDice").innerHTML = "";
-    document.getElementById("conDice").innerHTML = "";
-    document.getElementById("taiDice").innerHTML = "";
-    document.getElementById("dexDice").innerHTML = "";
-    document.getElementById("intDice").innerHTML = "";
-    document.getElementById("pouDice").innerHTML = "";
-    document.getElementById("chaDice").innerHTML = "";
+// Listes des clés associées aux différentes informations
+const localisationKeys = ["loca1", "loca2", "loca3", "loca4", "loca5", "loca6", "loca7", "loca8", "loca9", "loca10"];
+const dVingtKeys = ["locaNumUn", "locaNumDeux", "locaNumTrois", "locaNumQuatre", "locaNumCinq", "locaNumSix", "locaNumSept", "locaNumHuit", "locaNumNeuf", "locaNumDix"];
+const armKeys = ["locaArmUn", "locaArmDeux", "locaArmTrois", "locaArmQuatre", "locaArmCinq", "locaArmSix", "locaArmSept", "locaArmHuit", "locaArmNeuf", "locaArmDix"];
+const pvKeys = ["locaPvUn", "locaPvDeux", "locaPvTrois", "locaPvQuatre", "locaPvCinq", "locaPvSix", "locaPvSept", "locaPvHuit", "locaPvNeuf", "locaPvDix"];
+const importKeys = ["locaImportUn", "locaImportDeux", "locaImportTrois", "locaImportQuatre", "locaImportCinq", "locaImportSix", "locaImportSept", "locaImportHuit", "locaImportNeuf", "locaImportDix"];
+let armBonKeys = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+let pvTotalMbKeys = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+let pvMaxKeys = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+let tableauDegats = [];
 
-    effacerDivsLoca();
-    hideDiv();
-    etatPerso(pv);
-
-    // Réinitialise les états
-    inconscient = false;
-    mort = false;
-    choc = false;
-    ko = false;
-    detruit = false;
-}
-
-// Données de dés en fonction des races
+// Données des races
 const raceDiceData = {
     "humain": {
         str: "3d6",
@@ -74,16 +57,17 @@ const raceDiceData = {
         armure: "0",
         deplac: "8",
         page: "*",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -137,16 +121,17 @@ const raceDiceData = {
         armure: "0",
         deplac: "5/9(arbres)",
         page: "22B",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -200,16 +185,17 @@ const raceDiceData = {
         armure: "0",
         deplac: "9",
         page: "18B",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -263,16 +249,17 @@ const raceDiceData = {
         armure: "4(queue)",
         deplac: "0/9(nage)",
         page: "23B",
-        locaUn: "Queue-fouet",
-        locaDeux: "Abdomen",
-        locaTrois: "Poitrine",
-        locaQuatre: "Bras droit",
-        locaCinq: "Bras gauche",
-        locaSix: "Tête",
-        locaSept: "",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "6",
+        loca1: "Queue-fouet",
+        loca2: "Abdomen",
+        loca3: "Poitrine",
+        loca4: "Bras droit",
+        loca5: "Bras gauche",
+        loca6: "Tête",
+        loca7: "",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-7",
         locaNumDeux: "8-11",
         locaNumTrois: "12",
@@ -326,16 +313,17 @@ const raceDiceData = {
         armure: "0",
         deplac: "9",
         page: "19B",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -389,16 +377,17 @@ const raceDiceData = {
         armure: "0",
         deplac: "9",
         page: "20B",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -452,16 +441,17 @@ const raceDiceData = {
         armure: "0",
         deplac: "7",
         page: "23B",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -515,16 +505,17 @@ const raceDiceData = {
         armure: "0",
         deplac: "9",
         page: "21B",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -578,16 +569,17 @@ const raceDiceData = {
         armure: "0",
         deplac: "3/10(vol)",
         page: "24B",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Aile droite",
-        locaSix: "Aile gauche",
-        locaSept: "Bras droit",
-        locaHuit: "Bras gauche",
-        locaNeuf: "Tête",
-        locaDix: "",
+        nbLoca: "9",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Aile droite",
+        loca6: "Aile gauche",
+        loca7: "Bras droit",
+        loca8: "Bras gauche",
+        loca9: "Tête",
+        loca10: "",
         locaNumUn: "1-3",
         locaNumDeux: "4-6",
         locaNumTrois: "7-9",
@@ -641,16 +633,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "",
-        locaDeux: "",
-        locaTrois: "",
-        locaQuatre: "",
-        locaCinq: "",
-        locaSix: "",
-        locaSept: "",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "",
+        loca1: "",
+        loca2: "",
+        loca3: "",
+        loca4: "",
+        loca5: "",
+        loca6: "",
+        loca7: "",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "",
         locaNumDeux: "",
         locaNumTrois: "",
@@ -704,16 +697,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "",
-        locaDeux: "",
-        locaTrois: "",
-        locaQuatre: "",
-        locaCinq: "",
-        locaSix: "",
-        locaSept: "",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "",
+        loca1: "",
+        loca2: "",
+        loca3: "",
+        loca4: "",
+        loca5: "",
+        loca6: "",
+        loca7: "",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "",
         locaNumDeux: "",
         locaNumTrois: "",
@@ -767,16 +761,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -830,16 +825,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "",
-        locaDeux: "",
-        locaTrois: "",
-        locaQuatre: "",
-        locaCinq: "",
-        locaSix: "",
-        locaSept: "",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "",
+        loca2: "",
+        loca3: "",
+        loca4: "",
+        loca5: "",
+        loca6: "",
+        loca7: "",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "",
         locaNumDeux: "",
         locaNumTrois: "",
@@ -893,16 +889,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -956,16 +953,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "",
-        locaDeux: "",
-        locaTrois: "",
-        locaQuatre: "",
-        locaCinq: "",
-        locaSix: "",
-        locaSept: "",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "",
+        loca1: "",
+        loca2: "",
+        loca3: "",
+        loca4: "",
+        loca5: "",
+        loca6: "",
+        loca7: "",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "",
         locaNumDeux: "",
         locaNumTrois: "",
@@ -1019,16 +1017,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "",
-        locaDeux: "",
-        locaTrois: "",
-        locaQuatre: "",
-        locaCinq: "",
-        locaSix: "",
-        locaSept: "",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "",
+        loca1: "",
+        loca2: "",
+        loca3: "",
+        loca4: "",
+        loca5: "",
+        loca6: "",
+        loca7: "",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "",
         locaNumDeux: "",
         locaNumTrois: "",
@@ -1082,16 +1081,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -1145,16 +1145,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -1208,16 +1209,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "",
-        locaDeux: "",
-        locaTrois: "",
-        locaQuatre: "",
-        locaCinq: "",
-        locaSix: "",
-        locaSept: "",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "",
+        loca1: "",
+        loca2: "",
+        loca3: "",
+        loca4: "",
+        loca5: "",
+        loca6: "",
+        loca7: "",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "",
         locaNumDeux: "",
         locaNumTrois: "",
@@ -1271,16 +1273,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "",
-        locaDeux: "",
-        locaTrois: "",
-        locaQuatre: "",
-        locaCinq: "",
-        locaSix: "",
-        locaSept: "",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "",
+        loca1: "",
+        loca2: "",
+        loca3: "",
+        loca4: "",
+        loca5: "",
+        loca6: "",
+        loca7: "",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "",
         locaNumDeux: "",
         locaNumTrois: "",
@@ -1334,16 +1337,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "",
-        locaDeux: "",
-        locaTrois: "",
-        locaQuatre: "",
-        locaCinq: "",
-        locaSix: "",
-        locaSept: "",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "",
+        loca1: "",
+        loca2: "",
+        loca3: "",
+        loca4: "",
+        loca5: "",
+        loca6: "",
+        loca7: "",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "",
         locaNumDeux: "",
         locaNumTrois: "",
@@ -1397,16 +1401,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "",
-        locaDeux: "",
-        locaTrois: "",
-        locaQuatre: "",
-        locaCinq: "",
-        locaSix: "",
-        locaSept: "",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "",
+        loca1: "",
+        loca2: "",
+        loca3: "",
+        loca4: "",
+        loca5: "",
+        loca6: "",
+        loca7: "",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "",
         locaNumDeux: "",
         locaNumTrois: "",
@@ -1460,16 +1465,17 @@ const raceDiceData = {
         armure: "0",
         deplac: "6/12(vol)",
         page: "47B",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Aile droite",
-        locaSix: "Aile gauche",
-        locaSept: "Bras droit",
-        locaHuit: "Bras gauche",
-        locaNeuf: "Tête",
-        locaDix: "",
+        nbLoca: "9",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Aile droite",
+        loca6: "Aile gauche",
+        loca7: "Bras droit",
+        loca8: "Bras gauche",
+        loca9: "Tête",
+        loca10: "",
         locaNumUn: "1-3",
         locaNumDeux: "4-6",
         locaNumTrois: "7-9",
@@ -1523,16 +1529,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -1586,16 +1593,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "",
-        locaDeux: "",
-        locaTrois: "",
-        locaQuatre: "",
-        locaCinq: "",
-        locaSix: "",
-        locaSept: "",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "",
+        loca1: "",
+        loca2: "",
+        loca3: "",
+        loca4: "",
+        loca5: "",
+        loca6: "",
+        loca7: "",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "",
         locaNumDeux: "",
         locaNumTrois: "",
@@ -1649,16 +1657,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -1712,16 +1721,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -1775,16 +1785,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -1838,16 +1849,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -1901,16 +1913,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -1964,16 +1977,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -2027,16 +2041,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "",
-        locaDeux: "",
-        locaTrois: "",
-        locaQuatre: "",
-        locaCinq: "",
-        locaSix: "",
-        locaSept: "",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "",
+        loca1: "",
+        loca2: "",
+        loca3: "",
+        loca4: "",
+        loca5: "",
+        loca6: "",
+        loca7: "",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "",
         locaNumDeux: "",
         locaNumTrois: "",
@@ -2090,16 +2105,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -2153,16 +2169,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "Jambe droite",
-        locaDeux: "Jambe gauche",
-        locaTrois: "Abdomen",
-        locaQuatre: "Poitrine",
-        locaCinq: "Bras droit",
-        locaSix: "Bras gauche",
-        locaSept: "Tête",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "7",
+        loca1: "Jambe droite",
+        loca2: "Jambe gauche",
+        loca3: "Abdomen",
+        loca4: "Poitrine",
+        loca5: "Bras droit",
+        loca6: "Bras gauche",
+        loca7: "Tête",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "1-4",
         locaNumDeux: "5-8",
         locaNumTrois: "9-11",
@@ -2216,16 +2233,17 @@ const raceDiceData = {
         armure: "",
         deplac: "",
         page: "",
-        locaUn: "",
-        locaDeux: "",
-        locaTrois: "",
-        locaQuatre: "",
-        locaCinq: "",
-        locaSix: "",
-        locaSept: "",
-        locaHuit: "",
-        locaNeuf: "",
-        locaDix: "",
+        nbLoca: "",
+        loca1: "",
+        loca2: "",
+        loca3: "",
+        loca4: "",
+        loca5: "",
+        loca6: "",
+        loca7: "",
+        loca8: "",
+        loca9: "",
+        loca10: "",
         locaNumUn: "",
         locaNumDeux: "",
         locaNumTrois: "",
@@ -2270,11 +2288,6 @@ const raceDiceData = {
     },
 };
 
-let pv = 0;
-
-// Variable globale pour stocker la race
-let race = "";
-
 // Fonction pour afficher les dés selon la race
 function afficherDes() {
     if (race in raceDiceData) {
@@ -2293,42 +2306,39 @@ function afficherDes() {
 }
 
 // Fonction pour récupérer la race et afficher les dés en conséquence
-function recupRace() {
-    document.getElementById("race").addEventListener("change", function() {
-        const x = document.getElementById("race").selectedIndex;
-        
-        if (x != 0) {
-            document.getElementById("boutonRecherche").style.display = "inline-block";
-            document.getElementById("boutonAleatoire").style.display = "inline-block";
-            document.getElementById("boutonReset").style.display = "inline-block";
-        }
+document.getElementById("race").addEventListener("change", function() {
+    const x = document.getElementById("race").selectedIndex;
+    
+    if (x != 0) {
+        document.getElementById("boutonRecherche").style.display = "inline-block";
+        document.getElementById("boutonAleatoire").style.display = "inline-block";
+        document.getElementById("boutonReset").style.display = "inline-block";
+    }
 
-        // Récupérer la race sélectionnée
-        race = this.value;
-        afficherDes();  // Mettre à jour les valeurs des dés
-    });
-}
-
-// Appeler la fonction pour activer le changement de race
-recupRace();
+    // Récupérer la race sélectionnée
+    race = this.value;
+    afficherDes();  // Mettre à jour les valeurs des dés
+    genererLocalisations(race);
+});
 
 // Fonction de récupération des valeurs
 function recupVal() {
     // Récupérer les valeurs des champs et les convertir en nombres
-    const tai = parseInt(document.getElementById("tai").value) || 0;
-    const dex = parseInt(document.getElementById("dex").value) || 0;
-    const str = parseInt(document.getElementById("str").value) || 0;
-    const pou = parseInt(document.getElementById("pou").value) || 0;
-    const cha = parseInt(document.getElementById("cha").value) || 0;
-    const con = parseInt(document.getElementById("con").value) || 0;
-    const int = parseInt(document.getElementById("int").value) || 0;
+    tai = parseInt(document.getElementById("tai").value) || 0;
+    dex = parseInt(document.getElementById("dex").value) || 0;
+    str = parseInt(document.getElementById("str").value) || 0;
+    pou = parseInt(document.getElementById("pou").value) || 0;
+    cha = parseInt(document.getElementById("cha").value) || 0;
+    con = parseInt(document.getElementById("con").value) || 0;
+    int = parseInt(document.getElementById("int").value) || 0;
     return {tai, dex, str, pou, cha, con, int};
 }
 
+
 // Fonction pour afficher les PV
 function afficherPV() {
-    // Récupérer les valeurs des champs et les convertir en nombres
-    const {tai, pou, con} = recupVal();
+    // Récupérer les valeurs des champs en utilisant la fonction recupVal()
+    const { tai, pou, con } = recupVal();  // Récupérer les valeurs de TAI, POU et CON
 
     let pvTai = 0;
     let pvPou = 0;
@@ -2388,532 +2398,129 @@ function afficherPV() {
         vitGuer = 7;
     }
 
-    // Affichage des PV dans les différentes divs
+    newPv = pv;
+
+    // Affichage des PV et vitesse de guérison dans les divs correspondantes
     document.getElementById("pv").innerHTML = "PV Total : " + pv;
     document.getElementById("vitGuer").innerHTML = "Vitesse guérison : " + vitGuer;
-
-    
 }
 
-// Fonction pour afficher les Rangs d'actions de Tai et de DEX
-function afficherRangs() {
-    // Récupérer les valeurs des champs et les convertir en nombres
-    const {tai, dex, pou, cha, str} = recupVal();
+function calculBonusDegats(valeur, paliers, bonus) {
+    for (let i = 0; i < paliers.length; i++) {
+        if (valeur < paliers[i]) {
+            return bonus[i];
+        }
+    }
+    return bonus[bonus.length - 1];
+}
 
-    let rangTai = 0
-    let rangDex = 0
-    let bonDeg = 0
-    let degSpi = 0
+function afficherRangs() {
+    const { tai, pou, dex, cha, str } = recupVal(); // Supposons que valeurs soit déjà défini
 
     const forTai = str + tai;
     const pouCha = pou + cha;
 
-    // Calcul de rangTai
-    if (tai < 7) {
-        rangTai = 3;
-    } else if (tai < 15) {
-        rangTai = 2;
-    } else if (tai < 22) {
-        rangTai = 1;
-    } else {
-        rangTai = 0;
-    }
+    const rangTai = calculBonusDegats(tai, [7, 15, 22], [3, 2, 1, 0]);
+    const rangDex = calculBonusDegats(dex, [6, 9, 13, 16, 19], [5, 4, 3, 2, 1, 0]);
+    const bonDeg = calculBonusDegats(forTai, [13, 25, 33, 41, 57, 73, 89, 105], ["-1D4", "0", "1D4", "1D6", "2D6", "3D6", "4D6", "5D6", "6D6"]);
+    const degSpi = calculBonusDegats(pouCha, [13, 25, 33, 41, 57, 73, 89, 105], ["1D3", "1D6", "1D6+1", "1D6+3", "2D6+3", "3D6+4", "4D6+5", "5D6+6", "6D6+7"]);
 
-    // Calcul de rangDex
-    if (dex < 6) {
-        rangDex = 5;
-    } else if (dex < 9) {
-        rangDex = 4;
-    } else if (dex < 13) {
-        rangDex = 3;
-    } else if (dex < 16) {
-        rangDex = 2;
-    } else if (dex < 19) {
-        rangDex = 1;
-    } else {
-        rangDex = 0;
-    }
-
-    // Calcul de bonus de dégâts
-    if (forTai < 13) {
-        bonDeg = "-1D4";
-    } else if (forTai < 25) {
-        bonDeg = "0";
-    } else if (forTai < 33) {
-        bonDeg = "1D4";
-    } else if (forTai < 41) {
-        bonDeg = "1D6";
-    } else if (forTai < 57) {
-        bonDeg = "2d6";
-    } else if (forTai < 73) {
-        bonDeg = "3d6";
-    } else if (forTai < 89) {
-        bonDeg = "4d6";
-    } else if (forTai < 105) {
-        bonDeg = "5D6";
-    } else {
-        bonDeg = "6D6";
-    }
-
-    // Calcul de bonus de dégâts spirituels
-    if (pouCha < 13) {
-        degSpi = "1D3";
-    } else if (pouCha < 25) {
-        degSpi = "1D6";
-    } else if (pouCha < 33) {
-        degSpi = "1D6+1";
-    } else if (pouCha < 41) {
-        degSpi = "1D6+3";
-    } else if (pouCha < 57) {
-        degSpi = "2d6+3";
-    } else if (pouCha < 73) {
-        degSpi = "3d6+4";
-    } else if (pouCha < 89) {
-        degSpi = "4d6+5";
-    } else if (pouCha < 105) {
-        degSpi = "5D6+6";
-    } else {
-        degSpi = "6D6+7";
-    }
-
-    // Affichage des Rangs d'actions dans les différentes divs
+    // Affichage des résultats
     document.getElementById("rangTai").innerHTML = "Rang d'action de Tai : " + rangTai;
     document.getElementById("rangDex").innerHTML = "Rang d'action de Dex : " + rangDex;
     document.getElementById("bonDeg").innerHTML = "Bonus aux dégâts : " + bonDeg;
     document.getElementById("degSpi").innerHTML = "Dégâts spirituels : " + degSpi;
 }
 
-// Fonction pour afficher les élements de Autres
 function afficherAutres() {
     // Récupérer les valeurs des champs et les convertir en nombres
-    const {str, con, pou} = recupVal();
-
+    const { pou, str, con } = recupVal();  // Extraction des valeurs
+    
     let enc = 0;
 
-    // Calcul encombrement
-    if (str < con) {
-        enc = str;
-    } else {
-        forCon = str + con;
-        enc = Math.ceil(forCon / 2);
-    }
+    // Calcul de l'encombrement maximal
+    enc = str < con ? str : Math.ceil((str + con) / 2);
     
     // Calcul des points de magie
-    let pm = pou;
+    const pm = pou;
 
-    // Affichage
+    // Affichage des résultats
     document.getElementById("enc").innerHTML = "Encombrement maximal : " + enc;
     document.getElementById("pm").innerHTML = "Points de magie : " + pm;
+
+    // Afficher la section (si cachée)
     showDiv();
 }
 
+
 // Fonction d'affichage des mods de compétences
 function afficherModComp() {
-    //Récup des valeurs
-    const {str, tai, pou, dex, int, cha} = recupVal();
+    // Récupérer les valeurs des champs
+    const { tai, dex, str, pou, cha, int } = recupVal();
 
-    let agi = 0;
-    let com = 0;
-    let conn = 0;
-    let mag = 0;
-    let man = 0;
-    let per = 0;
-    let dis = 0;
+    // Initialisation des modificateurs
+    let agi = 0, com = 0, conn = 0, mag = 0, man = 0;
 
-    // Calcul mod agilité
-    if (str < 5) {
-        agi -= 5;
-    } else if (str < 9) {
-        agi += 0;
-    } else if (str < 13) {
-        agi += 0;
-    } else if (str < 17) {
-        agi += 0;
-    } else if (str < 21) {
-        agi += 5;
-    } else if (str < 25) {
-        agi += 10;
-    } else if (str < 29) {
-        agi += 15;
-    } else {
-        agi += 20;
+    // Seuils et modificateurs
+    const seuils = [5, 9, 13, 17, 21, 25, 29];
+    const UnMods = [-5, 0, 0, 0, 5, 10, 15, 20];
+    const DeMods = [-10, -5, 0, 5, 10, 15, 20, 25];
+    const TrMods = [10, 5, 0, -5, -10, -15, -20, -25];
+    const QuMods = [5, 0, 0, 0, -5, -10, -15, -20];
+
+
+    // Modificateur d'agilité basé sur STR, DEX, TAI et POU
+    agi += calculModComp(str, seuils, UnMods);
+    agi += calculModComp(tai, seuils, QuMods);
+    agi += calculModComp(dex, seuils, DeMods);
+    agi += calculModComp(pou, seuils, UnMods);
+
+    // Modificateur de communication
+    com += calculModComp(pou, seuils, UnMods);
+    com += calculModComp(int, seuils, UnMods);
+    com += calculModComp(cha, seuils, DeMods);
+
+    // Modificateur de connaissances
+    conn += calculModComp(int, seuils, DeMods);
+    conn += calculModComp(pou, seuils, UnMods);
+
+    // Modificateur de magie
+    mag += calculModComp(pou, seuils, DeMods);
+    mag += calculModComp(cha, seuils, UnMods);
+
+    // Modificateur de manipulation
+    man += calculModComp(str, seuils, UnMods);
+    man += calculModComp(dex, seuils, DeMods);
+    man += calculModComp(int, seuils, DeMods);
+    man += calculModComp(pou, seuils, UnMods);
+
+    // Modificateur de perception
+    per += calculModComp(int, seuils, DeMods);
+    per += calculModComp(pou, seuils, UnMods);
+
+    // Modificateur de discretion
+    dis += calculModComp(tai, seuils, TrMods);
+    dis += calculModComp(dex, seuils, DeMods);
+    dis += calculModComp(int, seuils, DeMods);
+    dis += calculModComp(pou, seuils, QuMods);
+
+
+    // Affichage des modificateurs dans le DOM
+    document.getElementById("agi").innerHTML = "Mod Agilité : " + agi;
+    document.getElementById("com").innerHTML = "Mod Communication : " + com;
+    document.getElementById("conn").innerHTML = "Mod Connaissances : " + conn;
+    document.getElementById("mag").innerHTML = "Mod Magie : " + mag;
+    document.getElementById("man").innerHTML = "Mod Manipulation : " + man;
+}
+
+// Fonction pour calculer le modificateur de compétence en fonction des valeurs seuils
+function calculModComp(valeur, seuils, modificateurs) {
+    for (let i = 0; i < seuils.length; i++) {
+        if (valeur < seuils[i]) {
+            return modificateurs[i];
+        }
     }
-
-    if (tai < 5) {
-        agi += 5;
-    } else if (tai < 9) {
-        agi += 0;
-    } else if (tai < 13) {
-        agi += 0;
-    } else if (tai < 17) {
-        agi += 0;
-    } else if (tai < 21) {
-        agi -= 5;
-    } else if (tai < 25) {
-        agi -= 10;
-    } else if (tai < 29) {
-        agi -= 15;
-    } else {
-        agi -= 20;
-    }
-
-    if (dex < 5) {
-        agi -= 10;
-    } else if (dex < 9) {
-        agi -= 5;
-    } else if (dex < 13) {
-        agi += 0;
-    } else if (dex < 17) {
-        agi += 5;
-    } else if (dex < 21) {
-        agi += 10;
-    } else if (dex < 25) {
-        agi += 15;
-    } else if (dex < 29) {
-        agi += 20;
-    } else {
-        agi += 25;
-    }
-
-    if (pou < 5) {
-        agi -= 5;
-    } else if (pou < 9) {
-        agi += 0;
-    } else if (pou < 13) {
-        agi += 0;
-    } else if (pou < 17) {
-        agi += 0;
-    } else if (pou < 21) {
-        agi += 5;
-    } else if (pou < 25) {
-        agi += 10;
-    } else if (pou < 29) {
-        agi += 15;
-    } else {
-        agi += 20;
-    }
-
-    //Calcul communication
-    if (pou < 5) {
-        com -= 5;
-    } else if (pou < 9) {
-        com += 0;
-    } else if (pou < 13) {
-        com += 0;
-    } else if (pou < 17) {
-        com += 0;
-    } else if (pou < 21) {
-        com += 5;
-    } else if (pou < 25) {
-        com += 10;
-    } else if (pou < 29) {
-        com += 15;
-    } else {
-        com += 20;
-    }
-
-    if (int < 5) {
-        com -= 5;
-    } else if (int < 9) {
-        com += 0;
-    } else if (int < 13) {
-        com += 0;
-    } else if (int < 17) {
-        com += 0;
-    } else if (int < 21) {
-        com += 5;
-    } else if (int < 25) {
-        com += 10;
-    } else if (int < 29) {
-        com += 15;
-    } else {
-        com += 20;
-    }
-
-    if (cha < 5) {
-        com -= 10;
-    } else if (cha < 9) {
-        com -= 5;
-    } else if (cha < 13) {
-        com += 0;
-    } else if (cha < 17) {
-        com += 5;
-    } else if (cha < 21) {
-        com += 10;
-    } else if (cha < 25) {
-        com += 15;
-    } else if (cha < 29) {
-        com += 20;
-    } else {
-        com += 25;
-    }
-
-    // Calcul de connaissances
-    if (int < 5) {
-        conn -= 10;
-    } else if (int < 9) {
-        conn -= 5;
-    } else if (int < 13) {
-        conn += 0;
-    } else if (int < 17) {
-        conn += 5;
-    } else if (int < 21) {
-        conn += 10;
-    } else if (int < 25) {
-        conn += 15;
-    } else if (int < 29) {
-        conn += 20;
-    } else {
-        conn += 25;
-    }
-
-    if (pou < 5) {
-        conn -= 5;
-    } else if (pou < 9) {
-        conn += 0;
-    } else if (pou < 13) {
-        conn += 0;
-    } else if (pou < 17) {
-        conn += 0;
-    } else if (pou < 21) {
-        conn += 5;
-    } else if (pou < 25) {
-        conn += 10;
-    } else if (pou < 29) {
-        conn += 15;
-    } else {
-        conn += 20;
-    }
-
-    //Calcul de magie
-    if (pou < 5) {
-        mag -= 10;
-    } else if (pou < 9) {
-        mag -= 5;
-    } else if (pou < 13) {
-        mag += 0;
-    } else if (pou < 17) {
-        mag += 5;
-    } else if (pou < 21) {
-        mag += 10;
-    } else if (pou < 25) {
-        mag += 15;
-    } else if (pou < 29) {
-        mag += 20;
-    } else {
-        mag += 25;
-    }
-
-    if (cha < 5) {
-        mag -= 5;
-    } else if (cha < 9) {
-        mag += 0;
-    } else if (cha < 13) {
-        mag += 0;
-    } else if (cha < 17) {
-        mag += 0;
-    } else if (cha < 21) {
-        mag += 5;
-    } else if (cha < 25) {
-        mag += 10;
-    } else if (cha < 29) {
-        mag += 15;
-    } else {
-        mag += 20;
-    }
-
-    //Calcul manipulation
-    if (str < 5) {
-        man -= 5;
-    } else if (str < 9) {
-        man += 0;
-    } else if (str < 13) {
-        man += 0;
-    } else if (str < 17) {
-        man += 0;
-    } else if (str < 21) {
-        man += 5;
-    } else if (str < 25) {
-        man += 10;
-    } else if (str < 29) {
-        man += 15;
-    } else {
-        man += 20;
-    }
-
-    if (dex < 5) {
-        man -= 10;
-    } else if (dex < 9) {
-        man -= 5;
-    } else if (dex < 13) {
-        man += 0;
-    } else if (dex < 17) {
-        man += 5;
-    } else if (dex < 21) {
-        man += 10;
-    } else if (dex < 25) {
-        man += 15;
-    } else if (dex < 29) {
-        man += 20;
-    } else {
-        man += 25;
-    }
-
-    if (int < 5) {
-        man -= 10;
-    } else if (int < 9) {
-        man -= 5;
-    } else if (int < 13) {
-        man += 0;
-    } else if (int < 17) {
-        man += 5;
-    } else if (int < 21) {
-        man += 10;
-    } else if (int < 25) {
-        man += 15;
-    } else if (int < 29) {
-        man += 20;
-    } else {
-        man += 25;
-    }
-
-    if (pou < 5) {
-        man -= 5;
-    } else if (pou < 9) {
-        man += 0;
-    } else if (pou < 13) {
-        man += 0;
-    } else if (pou < 17) {
-        man += 0;
-    } else if (pou < 21) {
-        man += 5;
-    } else if (pou < 25) {
-        man += 10;
-    } else if (pou < 29) {
-        man += 15;
-    } else {
-        man += 20;
-    }
-
-    // Calcul perception
-    if (int < 5) {
-        per -= 10;
-    } else if (int < 9) {
-        per -= 5;
-    } else if (int < 13) {
-        per += 0;
-    } else if (int < 17) {
-        per += 5;
-    } else if (int < 21) {
-        per += 10;
-    } else if (int < 25) {
-        per += 15;
-    } else if (int < 29) {
-        per += 20;
-    } else {
-        per += 25;
-    }
-
-    if (pou < 5) {
-        per -= 5;
-    } else if (pou < 9) {
-        per += 0;
-    } else if (pou < 13) {
-        per += 0;
-    } else if (pou < 17) {
-        per += 0;
-    } else if (pou < 21) {
-        per += 5;
-    } else if (pou < 25) {
-        per += 10;
-    } else if (pou < 29) {
-        per += 15;
-    } else {
-        per += 20;
-    }
-
-    // Calcul discrétion
-    if (tai < 5) {
-        dis += 10;
-    } else if (tai < 9) {
-        dis += 5;
-    } else if (tai < 13) {
-        dis += 0;
-    } else if (tai < 17) {
-        dis -= 5;
-    } else if (tai < 21) {
-        dis -= 10;
-    } else if (tai < 25) {
-        dis -= 15;
-    } else if (tai < 29) {
-        dis -= 20;
-    } else {
-        dis -= 25;
-    }
-
-    if (dex < 5) {
-        dis -= 10;
-    } else if (dex < 9) {
-        dis -= 5;
-    } else if (dex < 13) {
-        dis += 0;
-    } else if (dex < 17) {
-        dis += 5;
-    } else if (dex < 21) {
-        dis += 10;
-    } else if (dex < 25) {
-        dis += 15;
-    } else if (dex < 29) {
-        dis += 20;
-    } else {
-        dis += 25;
-    }
-
-    if (int < 5) {
-        dis -= 10;
-    } else if (int < 9) {
-        dis -= 5;
-    } else if (int < 13) {
-        dis += 0;
-    } else if (int < 17) {
-        dis += 5;
-    } else if (int < 21) {
-        dis += 10;
-    } else if (int < 25) {
-        dis += 15;
-    } else if (int < 29) {
-        dis += 20;
-    } else {
-        dis += 25;
-    }
-
-    if (pou < 5) {
-        dis += 5;
-    } else if (pou < 9) {
-        dis += 0;
-    } else if (pou < 13) {
-        dis += 0;
-    } else if (pou < 17) {
-        dis += 0;
-    } else if (pou < 21) {
-        dis -= 5;
-    } else if (pou < 25) {
-        dis -= 10;
-    } else if (pou < 29) {
-        dis -= 15;
-    } else {
-        dis -= 20;
-    }
-
-
-    // Affichage
-    document.getElementById("agi").innerHTML = "Agilité : " + agi;
-    document.getElementById("com").innerHTML = "Communication : " + com;
-    document.getElementById("conn").innerHTML = "Connaissances : " + conn;
-    document.getElementById("mag").innerHTML = "Magie : " + mag;
-    document.getElementById("man").innerHTML = "Manipulation : " + man;
-    document.getElementById("per").innerHTML = "Perception : " + per;
-    document.getElementById("dis").innerHTML = "Discretion : " + dis;
+    return modificateurs[modificateurs.length - 1]; // Valeur par défaut si supérieure aux seuils
 }
 
 // Attacher l'événement de clic au bouton
@@ -2922,8 +2529,8 @@ document.getElementById("boutonRecherche").addEventListener("click", function na
     afficherRangs();
     afficherAutres();
     afficherModComp();
-    genererLocalisations(raceChoisie);
-    etatPerso(pv);
+    genererLocalisations(race);
+    // etatPerso(pv);
 });
 
 // Fonction pour générer un nombre entier aléatoire entre min et max inclus
@@ -2966,7 +2573,7 @@ function genererValeursAleatoires() {
 
 // Attacher l'événement de clic au bouton "Générer des valeurs aléatoires"
 document.getElementById("boutonAleatoire").addEventListener("click", function() {
-    if (!raceChoisie) {
+    if (!race) {
         alert("Veuillez sélectionner une race avant de générer des valeurs.");
         return;
     }
@@ -2975,37 +2582,14 @@ document.getElementById("boutonAleatoire").addEventListener("click", function() 
     afficherRangs();
     afficherAutres();
     afficherModComp();
-    genererLocalisations(raceChoisie);
-    etatPerso(pv);
+    genererLocalisations(race);
+    // etatPerso(pv);
 });
 
-
 // Bouton reset pour remettre à zero
-document.getElementById("boutonReset").addEventListener("click", window.onload)
+document.getElementById("boutonReset").addEventListener("click", reset);
 
-let pertePv = 0;
-
-// Fonction pour générer les localisations dynamiquement
 function genererLocalisations(race) {
-    // Sélectionner les éléments HTML où insérer les localisations
-    const locaDiv = document.getElementById("loca");
-    const dVingtDiv = document.getElementById("dVingt");
-    const armDiv = document.getElementById("arm");
-    const pvDiv = document.getElementById("pvLoca");
-    const armBonDiv = document.getElementById("armBon");
-    const degDiv = document.getElementById("degats");
-    const conDiv = document.getElementById("condition");
-
-    // Récupérer les données associées à la race choisie
-    const raceData = raceDiceData[race];
-
-    // Listes des clés associées aux différentes informations
-    const localisationKeys = ["locaUn", "locaDeux", "locaTrois", "locaQuatre", "locaCinq", "locaSix", "locaSept", "locaHuit", "locaNeuf", "locaDix"];
-    const dVingtKeys = ["locaNumUn", "locaNumDeux", "locaNumTrois", "locaNumQuatre", "locaNumCinq", "locaNumSix", "locaNumSept", "locaNumHuit", "locaNumNeuf", "locaNumDix"];
-    const armKeys = ["locaArmUn", "locaArmDeux", "locaArmTrois", "locaArmQuatre", "locaArmCinq", "locaArmSix", "locaArmSept", "locaArmHuit", "locaArmNeuf", "locaArmDix"];
-    const pvKeys = ["locaPvUn", "locaPvDeux", "locaPvTrois", "locaPvQuatre", "locaPvCinq", "locaPvSix", "locaPvSept", "locaPvHuit", "locaPvNeuf", "locaPvDix"];
-    const importKeys = ["locaImportUn", "locaImportDeux", "locaImportTrois", "locaImportQuatre", "locaImportCinq", "locaImportSix", "locaImportSept", "locaImportHuit", "locaImportNeuf", "locaImportDix"];
-
     // Vider les anciennes localisations
     locaDiv.innerHTML = '<div class="titreLoca">Localisation</div>';
     dVingtDiv.innerHTML = '<div class="titreLoca">D20</div>';
@@ -3015,131 +2599,98 @@ function genererLocalisations(race) {
     degDiv.innerHTML = '<div class="titreLoca">Dégâts</div>';
     conDiv.innerHTML = '<div class="titreLoca">Conditions</div>';
 
-    // Parcourir les localisations
-    localisationKeys.forEach((key, index) => {
-        const loca = raceData[key];
-        const dVingt = raceData[dVingtKeys[index]];
-        const armure = parseInt(raceData[armKeys[index]], 10);
-        const pvType = raceData[pvKeys[index]];
-        const importMembre = raceData[importKeys[index]];
-        let pvMembre = calculerPvMembre(pvType); // Calcul des PV du membre en fonction du type "a", "b", etc.
+    effacerDivsLoca()
+    const raceData = raceDiceData[race];  // Récupérer les données de la race sélectionnée
+    for (let i = 1; i <= 10; i++) {
+        const key = `loca${i}`;  // Générer la clé (loca1, loca2, etc.)
+        const x = parseInt(key.replace('loca', '')) - 1;
+        let locaId = "locaId" + x;
+        let d20Id = "d20Id" + x;
+        let armId = "armId" + x;
+        let pvId = "pvId" + x;
+        let armBonId = "armBonId" + x;
+        let degId = "degId" + x;
+        let conId = "conId" + x;
+        const localisation = raceData[key];  // Accéder à la localisation correspondante
+        const d20Key = raceData[dVingtKeys[x]]; // Accéder aux scores d20 liés à la localisation
+        const armure = parseInt(raceData[armKeys[x]]);
+        let armureTotale = armure + armBonKeys[x];
+        const type = raceData[pvKeys[x]];
+        pvMaxKeys[x] = calculerPvMembre(type)
+        let pvMax = pvMaxKeys[x];
+        pvActuel = pvMax - pvTotalMbKeys[x];
+        let pvActuelMax = pvActuel + "/" + pvMax;
+        tableauPvActuel.length = 0;  // Vider le tableau
+        ajouterPvActuel(pvActuel);
 
-        // Ajouter les localisations et D20
-        if (loca) {
-            ajouterCellule(locaDiv, loca);
-            ajouterCellule(dVingtDiv, dVingt || "");
-
-            // Ajouter l'armure
-            if (!isNaN(armure)) {
-                const armDivElem = ajouterCellule(armDiv, armure);
-                const bonusInput = ajouterInput(armBonDiv, 0);
-                bonusInput.addEventListener("input", () => {
-                    const bonus = parseInt(bonusInput.value, 10) || 0;
-                    armDivElem.textContent = armure + bonus; // Mise à jour avec bonus
-                });
-            }
-
-            // Ajouter les PV et gérer les malus
-            const pvDivElem = ajouterCellule(pvDiv, pvMembre);
-            const malusInput = ajouterInput(degDiv, 0);
-            const condiElem = ajouterCellule(conDiv, ""); // Élément condition
-
-            malusInput.addEventListener("input", () => {
-                malusValue = parseInt(malusInput.value, 10) || 0;
-                let pvAvecMalus = pvMembre - malusValue;
-
-                // Limiter les dégâts au double des PV max
-                const limiteDegats = pvMembre * 2;
-                pvAvecMalus = Math.max(pvAvecMalus, -pvMembre); // Les PV ne peuvent pas descendre en dessous du PV max en négatif
-                pvAvecMalus = Math.max(pvAvecMalus, -limiteDegats); // Les dégâts ne peuvent pas dépasser deux fois les PV max du membre
-                pertePv = Math.min(malusValue, limiteDegats);
-
-                if (malusValue >= pvMembre * 3) {
-                    if (importMembre === "i") {
-                        // Action spéciale pour localisation critique (membre tranché)
-                        condiElem.textContent = "Membre tranché";
-                        ko = true;
-                    } else if (importMembre === "k" || importMembre === "h" || importMembre === "ik") {
-                        // Mort si les dégâts dépassent 3 fois les PV max pour des localisations mortelles
-                        condiElem.textContent = "Détruit";
-                        detruit = true;
-                    }
-                } else if (malusValue >= pvMembre * 2) {
-                    if (importMembre === "i") {
-                        choc = true;
-                        condiElem.textContent = "Etat de choc";
-                    } else if (importMembre === "k" || importMembre === "h" || importMembre === "ik") {
-                        ko = true;
-                        condiElem.textContent = "Hémorragie";
-                    }
-                } else if (pvAvecMalus <= pvMembre * -2){
-                    if (importMembre === "ik" || importMembre === "k" || importMembre === "h") {
-                        condiElem;textContent = "Blessure grave";
-                        ko = true;
-                    } else if (importMembre === "i") {
-                        condiElem.textContent = "Membre inutilisable";
-                    }
-                } else if (pvAvecMalus <= 0) {
-                    if (importMembre === "i" || importMembre === "ik") {
-                        condiElem.textContent = "Membre inutilisable";
-                    } else if (importMembre === "h") {
-                        condiElem.textContent = "Hemorragie interne";
-                        choc = true;
-                    } else if (importMembre === "k") {
-                        ko = true;
-                    }
-                } else {
-                    condiElem.textContent = "Normal";
-                }
-
-                pvDivElem.textContent = Math.max(pvAvecMalus, -pvMembre); // Affichage des PV restants, avec minimum fixé à PV max en négatif
-                mettreAJourConditions(condiElem, pvAvecMalus, pvMembre);
-
-            });
-        }
-    });
-
-    // Fonctions auxiliaires
-    function ajouterCellule(parentDiv, textContent) {
-        const newDiv = document.createElement("div");
-        newDiv.className = "celLoca";
-        newDiv.textContent = textContent;
-        parentDiv.appendChild(newDiv);
-        return newDiv;
-    }
-
-    function ajouterInput(parentDiv, defaultValue) {
-        const inputDiv = document.createElement("div");
-        inputDiv.className = "celLocaPlus";
-        const input = document.createElement("input");
-        input.type = "number";
-        input.value = defaultValue;
-        inputDiv.appendChild(input);
-        parentDiv.appendChild(inputDiv);
-        return input;
-    }
-
-    function calculerPvMembre(type) {
-        let basePv = Math.ceil(pv / 3);
-        switch (type) {
-            case "a": return Math.max(basePv, 2);
-            case "b": return Math.max(basePv + 1, 3);
-            case "c": return Math.max(basePv - 1, 1);
-            default: return Math.max(basePv - 2, 1);
+        if (localisation != "") {
+            // Créer une case pour la localisation
+            ajouterCellule(locaDiv, localisation, locaId);
+            // Créer une case pour le d20
+            ajouterCellule(dVingtDiv, d20Key, d20Id);
+            // Créer une case pour l'armure
+            ajouterCellule(armDiv, armureTotale, armId);
+            // Créer une case pour les pv
+            ajouterCellule(pvDiv, pvActuelMax, pvId);
+            // Créer une case pour l'armure bonus
+            ajouterInput(armBonDiv, 0, armBonId);
+            // Créer une case pour les dégâts
+            ajouterInput(degDiv, 0, degId);
+            // Créer une case pour la condition
+            ajouterCelluleSpan(conDiv, "Tout va bien !", "Normal", conId);
         }
     }
 }
 
+// Fonctions auxiliaires
+function ajouterCellule(parentDiv, textContent, id) {
+    const newDiv = document.createElement("div");
+    newDiv.className = "celLoca";
+    if (id) {
+        newDiv.id = id;  // Ajout de l'ID si fourni
+    }
+    newDiv.textContent = textContent;
+    parentDiv.appendChild(newDiv);
+    return newDiv;
+}
 
+function ajouterCelluleSpan(parentDiv, contenu, titre, id) {
+    // Crée une nouvelle div
+    const newDiv = document.createElement("div");
+    newDiv.className = "celLoca";
+    parentDiv.appendChild(newDiv);
 
-let raceChoisie = "";
+    // Crée un élément <span>
+    const tooltipSpan = document.createElement("span");
+    // Ajoute la classe "tooltip" à cet élément
+    tooltipSpan.classList.add("tooltip");
+    if (id) {
+        newDiv.id = id;  // Ajout de l'ID si fourni
+    }
+    // Ajouter l'attribut "data-tooltip" avec le texte 
+    tooltipSpan.setAttribute("data-tooltip", contenu);
+    // Ajoute le texte qui sera visible dans le <span>
+    tooltipSpan.textContent = titre;
+    // Insère ce <span> comme enfant de la nouvelle div
+    newDiv.appendChild(tooltipSpan);
 
-// Fonction pour gérer le changement de race
-document.getElementById("race").addEventListener("change", function() {
-    raceChoisie = this.value;
-    genererLocalisations(raceChoisie);
-    updateDeplacValue();
-});
+    // Retourne la nouvelle div et le span dans un objet
+    return { newDiv, tooltipSpan };
+}
+
+function ajouterInput(parentDiv, defaultValue, id) {
+    const inputDiv = document.createElement("div");
+    inputDiv.className = "celLocaPlus";
+    const input = document.createElement("input");
+    input.type = "number";
+    input.value = defaultValue;
+    if (id) {
+        input.id = id;  // Ajout de l'ID si fourni
+    }
+    inputDiv.appendChild(input);
+    parentDiv.appendChild(inputDiv);
+    return input;
+}
 
 // Fonction pour effacer les cases du tableau
 function effacerDivsLoca() {
@@ -3162,16 +2713,20 @@ function effacerDivsLoca() {
     });
 }
 
-// Fonction pour mettre à jour la valeur de déplacement
-function updateDeplacValue() {
-    const raceChoisie = document.getElementById("race").value; // Récupère la race sélectionnée
-    const deplacValue = raceDiceData[raceChoisie]?.deplac; // Récupère la valeur associée à "deplac" pour cette race
-
-    if (deplacValue) {
-        document.getElementById("mvt").innerText = "Mouvement : " + deplacValue; // Affiche la valeur dans le div
-    } else {
-        document.getElementById("mvt").innerText = "Mouvement : "; // Réinitialise si aucune race n'est sélectionnée
+// Fonction pour calculer les pv en fonction de la localisation
+function calculerPvMembre(type) {
+    let basePv = Math.ceil(pv / 3);
+    switch (type) {
+        case "a": return Math.max(basePv, 2);
+        case "b": return Math.max(basePv + 1, 3);
+        case "c": return Math.max(basePv - 1, 1);
+        default: return Math.max(basePv - 2, 1);
     }
+}
+
+// Fonction pour ajouter les valeurs au tableau pvActuel
+function ajouterPvActuel(pvActuel) {
+    tableauPvActuel.push(pvActuel);  // Ajouter la valeur de pvActuel dans le tableau
 }
 
 // Fonction pour rendre visible mvt
@@ -3186,67 +2741,349 @@ function hideDiv() {
     div.style.display = "none";  // Rend la div invisible
 }
 
-// Écouter l'événement click sur le bouton d'attaque
-const atkButton = document.getElementById("atk");
-atkButton.addEventListener("click", () => {
-    // Mettre à jour les PV
-    pv -= pertePv;
-    pertePv = 0;
+// Fonction de reset
+function reset() {
+    document.getElementById("str").value = "";
+    document.getElementById("con").value = "";
+    document.getElementById("tai").value = "";
+    document.getElementById("dex").value = "";
+    document.getElementById("int").value = "";
+    document.getElementById("pou").value = "";
+    document.getElementById("cha").value = "";
+    
+    // Réinitialiser l'affichage des caracs secondaires
+    document.getElementById("pv").innerHTML = "";
+    document.getElementById("vitGuer").innerHTML = "";
+    document.getElementById("rangTai").innerHTML = "";
+    document.getElementById("rangDex").innerHTML = "";
+    document.getElementById("bonDeg").innerHTML = "";
+    document.getElementById("degSpi").innerHTML = "";
+    document.getElementById("enc").innerHTML = "";
+    document.getElementById("pm").innerHTML = "";
+    document.getElementById("agi").innerHTML = "";
+    document.getElementById("com").innerHTML = "";
+    document.getElementById("conn").innerHTML = "";
+    document.getElementById("mag").innerHTML = "";
+    document.getElementById("man").innerHTML = "";
+    document.getElementById("per").innerHTML = "";
+    document.getElementById("dis").innerHTML = "";
+    document.getElementById("mvt").innerHTML = "";
 
-    // Afficher les nouveaux PV
-    document.getElementById("pv").innerHTML = "PV Total : " + pv;
+    // Remet la première option de la liste sélectionnée
+    document.getElementById("race").selectedIndex = 0;
+    document.getElementById("boutonRecherche").style.display = "none";
+    document.getElementById("boutonAleatoire").style.display = "none";
+    document.getElementById("boutonReset").style.display = "none";
 
-    // remise à zéro des inputs
-    inputs.forEach(input => {
-        input.value = 0; // Réinitialiser la valeur de chaque input à 0
-    });
+    // Remet les D6 à 0
+    
+    document.getElementById("strDice").innerHTML = "";
+    document.getElementById("conDice").innerHTML = "";
+    document.getElementById("taiDice").innerHTML = "";
+    document.getElementById("dexDice").innerHTML = "";
+    document.getElementById("intDice").innerHTML = "";
+    document.getElementById("pouDice").innerHTML = "";
+    document.getElementById("chaDice").innerHTML = "";
 
-    etatPerso(pv)
-});
-
-// Fonction pour vérifier l'état du perso et l'afficher
-function etatPerso(pv) {
-    // Vérification santé
-    if (ko == true) {
-        inconscient = true;
-    } else if (detruit == true) {
-        mort = true;
-    } else if (choc == true) {
-        // Vérifier si la div "horsCombat" existe déjà
-        if (!document.getElementById("horsCombat")) {
-            // Sélectionner la div parent "mortConsc"
-            const mortConscDiv = document.getElementById("mortConsc");
-
-            // Créer une nouvelle div "Hors combat"
-            const horsCombatDiv = document.createElement("div");
-            horsCombatDiv.id = "horsCombat";
-            horsCombatDiv.textContent = "Hors combat";
-
-            // Ajouter la nouvelle div en tant qu'enfant de "mortConsc"
-            mortConscDiv.appendChild(horsCombatDiv);
-        }
-    } else if (pv > 2) {
-        mort = false;
-        inconscient = false;
-    } else if (pv < 1) {
-        mort = true;
-        inconscient = true;
-    } else if (pv < 3) {
-        mort = false;
-        inconscient = true;
-    } 
-
-    if (mort == false) {
-        document.getElementById("mort").innerHTML = "Vivant";
-    } else {
-        document.getElementById("mort").innerHTML = "Mourant";
+    for (let i = 0; i < 10; i++) {
+        armBonKeys[i] = 0;
+        pvTotalMbKeys[i] = 0;
     }
 
-    if (inconscient == false) {
-        document.getElementById("inconsc").innerHTML = "Conscient";
-    } else {
-        document.getElementById("inconsc").innerHTML = "Inconscient";
+    effacerDivsLoca();
+    hideDiv();
+    // etatPerso(pv);
+    effacerResume();
+
+    // Réinitialise les états
+    inconscient = false;
+    mort = false;
+    choc = false;
+    ko = false;
+    detruit = false;
+    compteurBoutonSoin = 0;
+}
+
+window.onload = reset;
+
+// Fonction activée lors du clic sur le bouton "atk"
+document.getElementById("atk").addEventListener("click", function() {
+    // Sélectionne la div parent qui contient les inputs
+    let degats = document.getElementById("degats");
+
+    // Sélectionne tous les inputs enfants de degats
+    let inputs = degats.querySelectorAll("input");
+
+    // Parcours des inputs et vérification de leur valeur
+    inputs.forEach(function(input) {
+        let valeur = parseFloat(input.value); // Convertir la valeur en nombre
+        if (valeur > 0) {
+            // Crée un élément div pour le flash
+            let flash = document.createElement("div");
+            flash.classList.add("flash-red");
+            // Ajoute l'effet de flash au body
+            document.body.appendChild(flash);
+            // Joue le son d'attaque
+            let atkSound = document.getElementById("atkSound");
+            // Modifie le volume du son (par exemple, à 50% du volume maximum)
+            atkSound.volume = 0.5;
+            atkSound.play();
+            // Lance une transition pour faire disparaître le flash après 0.5s
+            setTimeout(function() {
+                flash.classList.add("fade-out");
+            }, 100);
+            // Supprime le flash de l'écran après l'animation
+            setTimeout(function() {
+                flash.remove();
+            }, 400); // 0.3s pour l'animation et 0.1s avant qu'elle commence
+
+            // Récupération de l'index
+            const raceData = raceDiceData[race];
+            let id = input.id;
+            let cle = parseInt(id.match(/\d+/)[0], 10); // Récupère la partie numérique de l'ID et la convertit en entier
+            let loca = raceData[localisationKeys[cle]]
+            // Limitation des dégâts max
+            valeur = Math.min(valeur, pvMaxKeys[cle] * 2);
+            // Limite minimale
+            let limiteMin = 2 * pvMaxKeys[cle]; // Limite à ne pas dépasser
+            // Calcul de la nouvelle valeur tout en respectant la limite
+            let nouvelleValeur = pvTotalMbKeys[cle] + valeur; // Valeur potentielle après addition
+            pvTotalMbKeys[cle] = Math.min(nouvelleValeur, limiteMin); // Assurer que la valeur ne soit pas inférieure à limiteMin
+            // Impact sur les PV de base
+            newPv -= valeur;
+            document.getElementById("pv").innerHTML = "PV Total : " + newPv;
+            // Ajout de la blessure au résumé
+            ajouterResume(loca, valeur);
+            // Ajout au tableau de dégâts
+            tableauDegats.push(valeur);
+        }
+        genererLocalisations(race);
+    });
+});
+
+// Fonction pour inscrire la blessure dans le résumé
+function ajouterResume(membreTouche, pertePv) {
+    // Sélectionner la div avec l'ID "resume"
+    const resumeDiv = document.getElementById("resume");
+    // Créer une nouvelle div pour le résumé
+    const nouvelleDiv = document.createElement("div");
+    // Ajouter du contenu dans la nouvelle div (localisation et perte de PV)
+    nouvelleDiv.textContent = `- Blessure sur ${membreTouche} de ${pertePv} points de vie`;
+    nouvelleDiv.setAttribute("dataMembreTouche", membreTouche); // Stocker la localisation du membre touché dans un attribut data
+    // Ajouter un style ou des classes si nécessaire
+    nouvelleDiv.classList.add("resume-item");  // Vous pouvez ajouter une classe CSS pour le style
+    // Ajouter la nouvelle div comme enfant de la div "resume"
+    resumeDiv.appendChild(nouvelleDiv);
+    // Intégration du bouton de soin
+    const newButton = document.createElement("button");
+    newButton.id = "boutonSoin" + compteurBoutonSoin;
+    newButton.classList.add("boutonSoin");
+    newButton.textContent = "Premiers soins";
+    nouvelleDiv.appendChild(newButton);
+    // Intégration de l'input de soin
+    const newInput = document.createElement("input");
+    newInput.id = "inputSoin" + compteurBoutonSoin;
+    newInput.className = "inputSoin";
+    newInput.type = "number";
+    newInput.value = 0;
+    nouvelleDiv.appendChild(newInput)
+    // Intégration de la checkbox
+    const soinDiv = document.createElement("div");
+    soinDiv.className = "soinDivSoin";
+    soinDiv.id = "soinDiv" + compteurBoutonSoin;
+    soinDiv.hidden = true;
+    nouvelleDiv.appendChild(soinDiv);
+    compteurBoutonSoin += 1;
+
+    // Ajouter un écouteur d'événement à chaque bouton
+    newButton.addEventListener("click", function() {
+        const raceData = raceDiceData[race];
+        let id = newButton.id;
+        let cle = parseInt(id.match(/\d+/)[0], 10); // Récupère la partie numérique de l'ID et la convertit en entier
+        let inputValue = parseInt(document.getElementById("inputSoin" + cle).value);
+        let degatBlessure = tableauDegats[cle];
+        inputValue = Math.min(inputValue, degatBlessure);
+        if (inputValue >= 0) {
+            // Crée un élément div pour le flash
+            let flash = document.createElement("div");
+            flash.classList.add("flashGreen");
+            // Ajoute l'effet de flash au body
+            document.body.appendChild(flash);
+            // Joue le son d'attaque
+            let soinSound = document.getElementById("soinSound");
+            // Modifie le volume du son (par exemple, à 50% du volume maximum)
+            soinSound.volume = 0.5;
+            soinSound.play();
+            // Lance une transition pour faire disparaître le flash après 0.5s
+            setTimeout(function() {
+                flash.classList.add("fade-out");
+            }, 100);
+            // Supprime le flash de l'écran après l'animation
+            setTimeout(function() {
+                flash.remove();
+            }, 400); // 0.3s pour l'animation et 0.1s avant qu'elle commence
+
+            document.getElementById("soinDiv" + cle).textContent = "Soigné de " + inputValue + " PV.";
+            document.getElementById("soinDiv" + cle).hidden = false;
+        } else {
+            // Crée un élément div pour le flash
+            let flash = document.createElement("div");
+            flash.classList.add("flash-red");
+            // Ajoute l'effet de flash au body
+            document.body.appendChild(flash);
+            // Joue le son d'attaque
+            let sonDouleur = document.getElementById("sonDouleur");
+            // Modifie le volume du son (par exemple, à 50% du volume maximum)
+            sonDouleur.volume = 0.5;
+            sonDouleur.play();
+            // Lance une transition pour faire disparaître le flash après 0.5s
+            setTimeout(function() {
+                flash.classList.add("fade-out");
+            }, 100);
+            // Supprime le flash de l'écran après l'animation
+            setTimeout(function() {
+                flash.remove();
+            }, 400); // 0.3s pour l'animation et 0.1s avant qu'elle commence
+
+            document.getElementById("soinDiv" + cle).textContent = "Blessure aggravée de " + -inputValue + " PV.";
+            document.getElementById("soinDiv" + cle).hidden = false;
+        }
+        // Récupérer le membre touché
+        let membreTouche = nouvelleDiv.getAttribute("dataMembreTouche");
+        let index = localisationKeys.findIndex(key => raceData[key] === membreTouche);
+        // Impact sur les PV de base
+        newPv += inputValue;
+        blessureSoin = inputValue;
+        document.getElementById("pv").innerHTML = "PV Total : " + newPv;
+        document.getElementById("inputSoin" + cle).value = 0;
+        // Modifier les PV du membre blessé
+        pvTotalMbKeys[index] -= inputValue;
+        newButton.disabled = true;
+        newButton.classList.add("boutonStop");
+        newButton.classList.remove("boutonSoin");
+        genererLocalisations(race);
+    });
+}
+
+function effacerResume() {
+    // Sélectionner toutes les divs avec la classe "resume-item"
+    const resumeItems = document.querySelectorAll('.resume-item');
+
+    // Parcourir tous les éléments et les supprimer du DOM
+    resumeItems.forEach(item => {
+        item.remove();
+    });
+}
+
+// Fonction pour le bouton clear résumé
+document.getElementById("resetResume").addEventListener("click", function() {
+    effacerResume()
+})
+
+// Modale de guérison
+// Sélectionne les éléments
+let modal = document.getElementById("myModal");
+let openModalBtn = document.getElementById("soinHub");
+let closeModalBtn = document.getElementById("closeModalBtn");
+
+// Lorsque l'utilisateur clique sur le bouton, afficher le modal
+openModalBtn.addEventListener("click", function() {
+    modal.style.display = "block";
+    remplirModal(race);
+});
+
+// Lorsque l'utilisateur clique sur le bouton de fermeture (X), cacher le modal
+closeModalBtn.addEventListener("click", function() {
+    modal.style.display = "none";
+});
+
+// Si l'utilisateur clique en dehors du modal, fermer le modal
+window.addEventListener("click", function(event) {
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+});
+
+// Fonction pour remplir la modale
+function remplirModal(race) {
+    const raceData = raceDiceData[race];  // Récupérer les données de la race sélectionnée
+    
+    // Parcourir les localisations (de 1 à 10)
+    for (let i = 1; i <= 10; i++) {
+        const key = `loca${i}`;  // Générer la clé (loca1, loca2, etc.)
+        const localisation = raceData[key];  // Accéder à la localisation correspondante
+
+        if (localisation !== "") {
+            let modal = document.getElementById("modal" + i);
+
+            if (modal) {
+                // Réinitialise le contenu de la modal avant de la remplir
+                modal.innerHTML = "";
+
+                // Crée un nouvel élément div pour la localisation
+                let locaModal = document.createElement("div");
+                locaModal.textContent = localisation;
+                // Ajouter du style ou des classes si nécessaire
+                locaModal.classList.add("localisation-item");
+                // Ajouter le nouveau contenu à la modale
+                modal.appendChild(locaModal);
+
+                // Crée un nouvel input pour la localisation
+                let modalInput = document.createElement("input");
+                modalInput.type = "number";
+                modalInput.value = 0;
+                modalInput.className = "modalInput";
+                let y = i - 1;
+                modalInput.id = "modalInput" + y;
+                modal.appendChild(modalInput);
+            }
+        }
     }
 }
 
+// Fonction de soin via modale
+function soinModal() {
+    let inputSoins = document.querySelectorAll(".modalInput");
+    let soins = 0;  // Initialiser la variable "soins" à 0
+    // Parcourir les inputs et additionner leurs valeurs
+    inputSoins.forEach(function(input) {
+        let valeur = parseFloat(input.value) || 0;  // Convertir la valeur en nombre, ou 0 si c'est vide
+        // Récupérer l'ID de l'input
+        let inputId = input.id;
+        let cle = parseInt(inputId.match(/\d+/)[0], 10);
+        pvTotalMbKeys[cle] -= Math.min(valeur, pvTotalMbKeys[cle]);
 
+        soins += valeur;  // Ajouter la valeur à la variable "soins"
+        input.value = 0;
+    });
+    // Soin des PV globaux
+    let maxSoin = pv - newPv;
+    newPv += Math.min(soins, maxSoin);
+    genererLocalisations(race);
+    document.getElementById("pv").innerHTML = "PV Total : " + newPv;
+}
+
+// Bouton de soin dans la modale
+let boutonSoinModal = document.getElementById("boutonModale");
+boutonSoinModal.addEventListener("click", function() {
+    soinModal();
+
+    // Crée un élément div pour le flash
+    let flash = document.createElement("div");
+    flash.classList.add("flashGreen");
+    // Ajoute l'effet de flash au body
+    document.body.appendChild(flash);
+    // Joue le son d'attaque
+    let soinSound = document.getElementById("soinSound");
+    // Modifie le volume du son (par exemple, à 50% du volume maximum)
+    soinSound.volume = 0.5;
+    soinSound.play();
+    // Lance une transition pour faire disparaître le flash après 0.5s
+    setTimeout(function() {
+        flash.classList.add("fade-out");
+    }, 100);
+    // Supprime le flash de l'écran après l'animation
+    setTimeout(function() {
+        flash.remove();
+    }, 400); // 0.3s pour l'animation et 0.1s avant qu'elle commence
+})
