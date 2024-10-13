@@ -2648,13 +2648,6 @@ function genererLocalisations(race) {
             ajouterCelluleSpan(conDiv, "Tout va bien !", "Normal", conId);
         }
     }
-    inputsArm = armureBon.querySelectorAll("input");
-    // Ajoute un écouteur d'événement à chaque input pour mise à jour en temps réel
-    inputsArm.forEach(function(input) {
-        input.addEventListener("input", function() {
-            mettreAJourArmBon(input);
-        });
-    });
 }
 
 // Fonctions auxiliaires
@@ -3121,14 +3114,22 @@ boutonSoinModal.addEventListener("click", function() {
     }, 400); // 0.3s pour l'animation et 0.1s avant qu'elle commence
 })
 
-
 // Fonction de mise à jour du tableau armBonKeys
 function mettreAJourArmBon(input) {
-    let valeur = input.value;
-    let id = input.id;
-    // Extraire la partie numérique de l'ID (par exemple, '1' à partir de 'armBon1')
-    let cle = parseInt(id.match(/\d+/)[0], 10); // Convertit l'ID en index pour le tableau armBonKeys (index 0 pour armBon1)
-    armBonKeys[cle] = valeur;  // Mettre à jour la valeur dans armBonKeys à l'index correspondant
+    if (input) {
+        let valeur = parseInt(input.value) || 0;  // Convertir en nombre, ou 0 si la valeur n'est pas valide
+        let id = input.id;
+        // Extraire la partie numérique de l'ID (par exemple, '1' à partir de 'armBon1')
+        let cle = parseInt(id.match(/\d+/)[0], 10); // Convertit l'ID en index pour le tableau armBonKeys
+        armBonKeys[cle] = valeur;  // Mettre à jour la valeur dans armBonKeys à l'index correspondant
+    }
 }
 
+document.getElementById("majArmure").addEventListener("click", function() {
+    for (let i = 0; i <= 10; i++) {
+        let input = document.getElementById("armBonId" + i);
+        mettreAJourArmBon(input);
+    }
+    genererLocalisations(race);
+});
 
