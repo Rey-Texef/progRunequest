@@ -33,6 +33,12 @@ const armBonDiv = document.getElementById("armBon");
 const degDiv = document.getElementById("degats");
 const conDiv = document.getElementById("condition");
 
+// Sélectionne la div parent qui contient les inputs d'armure
+let armureBon = document.getElementById("armBon");
+
+// Sélectionne tous les inputs enfants de armureBon
+let inputsArm = "";
+
 // Listes des clés associées aux différentes informations
 const localisationKeys = ["loca1", "loca2", "loca3", "loca4", "loca5", "loca6", "loca7", "loca8", "loca9", "loca10"];
 const dVingtKeys = ["locaNumUn", "locaNumDeux", "locaNumTrois", "locaNumQuatre", "locaNumCinq", "locaNumSix", "locaNumSept", "locaNumHuit", "locaNumNeuf", "locaNumDix"];
@@ -42,6 +48,7 @@ const importKeys = ["locaImportUn", "locaImportDeux", "locaImportTrois", "locaIm
 let armBonKeys = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 let pvTotalMbKeys = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 let pvMaxKeys = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+let tableauArmure = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 let tableauDegats = [];
 
 // Données des races
@@ -2401,7 +2408,7 @@ function afficherPV() {
     newPv = pv;
 
     // Affichage des PV et vitesse de guérison dans les divs correspondantes
-    document.getElementById("pv").innerHTML = "PV Total : " + pv;
+    document.getElementById("pv").innerHTML = "PV Total : " + newPv + "/" + pv;
     document.getElementById("vitGuer").innerHTML = "Vitesse guérison : " + vitGuer;
 }
 
@@ -2614,7 +2621,8 @@ function genererLocalisations(race) {
         const localisation = raceData[key];  // Accéder à la localisation correspondante
         const d20Key = raceData[dVingtKeys[x]]; // Accéder aux scores d20 liés à la localisation
         const armure = parseInt(raceData[armKeys[x]]);
-        let armureTotale = armure + armBonKeys[x];
+        let armureTotale = armure + parseInt(armBonKeys[x]);
+        tableauArmure[x] = armureTotale;
         const type = raceData[pvKeys[x]];
         pvMaxKeys[x] = calculerPvMembre(type)
         let pvMax = pvMaxKeys[x];
@@ -2633,13 +2641,20 @@ function genererLocalisations(race) {
             // Créer une case pour les pv
             ajouterCellule(pvDiv, pvActuelMax, pvId);
             // Créer une case pour l'armure bonus
-            ajouterInput(armBonDiv, 0, armBonId);
+            ajouterInputArm(armBonDiv, armBonKeys[x], armBonId);
             // Créer une case pour les dégâts
             ajouterInput(degDiv, 0, degId);
             // Créer une case pour la condition
             ajouterCelluleSpan(conDiv, "Tout va bien !", "Normal", conId);
         }
     }
+    inputsArm = armureBon.querySelectorAll("input");
+    // Ajoute un écouteur d'événement à chaque input pour mise à jour en temps réel
+    inputsArm.forEach(function(input) {
+        input.addEventListener("input", function() {
+            mettreAJourArmBon(input);
+        });
+    });
 }
 
 // Fonctions auxiliaires
@@ -2681,6 +2696,20 @@ function ajouterCelluleSpan(parentDiv, contenu, titre, id) {
 function ajouterInput(parentDiv, defaultValue, id) {
     const inputDiv = document.createElement("div");
     inputDiv.className = "celLocaPlus";
+    const input = document.createElement("input");
+    input.type = "number";
+    input.value = defaultValue;
+    if (id) {
+        input.id = id;  // Ajout de l'ID si fourni
+    }
+    inputDiv.appendChild(input);
+    parentDiv.appendChild(inputDiv);
+    return input;
+}
+
+function ajouterInputArm(parentDiv, defaultValue, id) {
+    const inputDiv = document.createElement("div");
+    inputDiv.className = "celLocaPlusArm";
     const input = document.createElement("input");
     input.type = "number";
     input.value = defaultValue;
@@ -2842,6 +2871,9 @@ document.getElementById("atk").addEventListener("click", function() {
             let id = input.id;
             let cle = parseInt(id.match(/\d+/)[0], 10); // Récupère la partie numérique de l'ID et la convertit en entier
             let loca = raceData[localisationKeys[cle]]
+            // Dégâts après armure
+            valeurX = valeur - tableauArmure[cle];
+            valeur = Math.max(valeurX, 0);
             // Limitation des dégâts max
             valeur = Math.min(valeur, pvMaxKeys[cle] * 2);
             // Limite minimale
@@ -2851,12 +2883,13 @@ document.getElementById("atk").addEventListener("click", function() {
             pvTotalMbKeys[cle] = Math.min(nouvelleValeur, limiteMin); // Assurer que la valeur ne soit pas inférieure à limiteMin
             // Impact sur les PV de base
             newPv -= valeur;
-            document.getElementById("pv").innerHTML = "PV Total : " + newPv;
+            document.getElementById("pv").innerHTML = "PV Total : " + newPv + "/" + pv;
             // Ajout de la blessure au résumé
             ajouterResume(loca, valeur);
             // Ajout au tableau de dégâts
             tableauDegats.push(valeur);
         }
+
         genererLocalisations(race);
     });
 });
@@ -2954,7 +2987,7 @@ function ajouterResume(membreTouche, pertePv) {
         // Impact sur les PV de base
         newPv += inputValue;
         blessureSoin = inputValue;
-        document.getElementById("pv").innerHTML = "PV Total : " + newPv;
+        document.getElementById("pv").innerHTML = "PV Total : " + newPv + "/" + pv;
         document.getElementById("inputSoin" + cle).value = 0;
         // Modifier les PV du membre blessé
         pvTotalMbKeys[index] -= inputValue;
@@ -3060,7 +3093,7 @@ function soinModal() {
     let maxSoin = pv - newPv;
     newPv += Math.min(soins, maxSoin);
     genererLocalisations(race);
-    document.getElementById("pv").innerHTML = "PV Total : " + newPv;
+    document.getElementById("pv").innerHTML = "PV Total : " + newPv + "/" + pv;
 }
 
 // Bouton de soin dans la modale
@@ -3087,3 +3120,15 @@ boutonSoinModal.addEventListener("click", function() {
         flash.remove();
     }, 400); // 0.3s pour l'animation et 0.1s avant qu'elle commence
 })
+
+
+// Fonction de mise à jour du tableau armBonKeys
+function mettreAJourArmBon(input) {
+    let valeur = input.value;
+    let id = input.id;
+    // Extraire la partie numérique de l'ID (par exemple, '1' à partir de 'armBon1')
+    let cle = parseInt(id.match(/\d+/)[0], 10); // Convertit l'ID en index pour le tableau armBonKeys (index 0 pour armBon1)
+    armBonKeys[cle] = valeur;  // Mettre à jour la valeur dans armBonKeys à l'index correspondant
+}
+
+

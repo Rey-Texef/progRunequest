@@ -218,7 +218,7 @@ h3 {
     display: none;
 }
 
-.titreLoca, .celLoca, .celLocaPlus {
+.titreLoca, .celLoca, .celLocaPlus, .celLocaPlusArm {
     border: 1px solid #0a0000;
     height: 50px;
     width: 100%;
@@ -262,6 +262,12 @@ h3 {
     font-size: 12px; /* Ajuster la taille de la police */
     padding: 2px;   /* Ajuster l'espace intérieur si nécessaire */
 }
+
+.celLocaPlusArm input {
+    width: 50px;    /* Ajuster la largeur */
+    height: 25px;   /* Ajuster la hauteur */
+    font-size: 12px; /* Ajuster la taille de la police */
+    padding: 2px;   /* Ajuster l'espace intérieur si nécessaire */}
 
 /* Style pour le texte qui a un tooltip */
 .tooltip {
