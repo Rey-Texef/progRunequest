@@ -396,8 +396,8 @@ h3 {
 }
 
 .modalInput {
-    width: 25px;    /* Ajuster la largeur */
-    height: 25px;   /* Ajuster la hauteur */
+    width: 35px;    /* Ajuster la largeur */
+    height: 35px;   /* Ajuster la hauteur */
     font-size: 12px; /* Ajuster la taille de la police */
     position: absolute;
     left: 50%;
