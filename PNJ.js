@@ -55,6 +55,7 @@ let detruit = [false, false, false, false, false, false, false, false, false, fa
 let contenuCondition = ["Tout va bien !", "Tout va bien !", "Tout va bien !", "Tout va bien !", "Tout va bien !", "Tout va bien !", "Tout va bien !", "Tout va bien !", "Tout va bien !", "Tout va bien !"];
 let titreCondition = ["Normal", "Normal", "Normal", "Normal", "Normal", "Normal", "Normal", "Normal", "Normal", "Normal"];
 let membreTranche = [false, false, false, false, false, false, false, false, false, false];
+let oneShot = [false, false, false, false, false, false, false, false, false, false];
 
 let raceDiceData;  // Variable globale pour stocker les données du JSON
 
@@ -69,7 +70,6 @@ function loadRaceData() {
         })
         .then(data => {
             raceDiceData = data;  // Stocke les données dans la variable globale
-            console.log("Données chargées :", raceDiceData);
         })
         .catch(error => {
             console.error('Erreur:', error);
@@ -79,7 +79,6 @@ function loadRaceData() {
 function utiliserRace(race) {
     if (raceDiceData) {  // Vérifie si les données sont chargées
         raceData = raceDiceData[race];  // Récupère les données pour la race sélectionnée
-        console.log("Données pour la race sélectionnée :", raceData);
         // Fais quelque chose avec raceData...
     } else {
         console.log("Les données de race ne sont pas encore chargées.");
@@ -161,7 +160,7 @@ function afficherPV() {
     } else if (tai < 29) {
         pvTai = 4;
     } else {
-        pvTai = 5;
+        pvTai = 5 + Math.floor((tai - 29) / 4);
     }
 
     // Calcul de pvPou
@@ -176,7 +175,7 @@ function afficherPV() {
     } else if (pou < 29) {
         pvPou = 3;
     } else {
-        pvPou = 4;
+        pvPou = 4 + Math.floor((pou - 29) / 4);
     }
 
     // Calcul des PV en combinant constitution, taille et pouvoir
@@ -196,7 +195,7 @@ function afficherPV() {
     } else if (con < 37) {
         vitGuer = 6;
     } else {
-        vitGuer = 7;
+        vitGuer = 7 + Math.floor((con - 37) / 6);
     }
 
     newPv = pv;
@@ -223,7 +222,7 @@ function afficherRangs() {
 
     const rangTai = calculBonusDegats(tai, [7, 15, 22], [3, 2, 1, 0]);
     const rangDex = calculBonusDegats(dex, [6, 9, 13, 16, 19], [5, 4, 3, 2, 1, 0]);
-    const bonDeg = calculBonusDegats(forTai, [13, 25, 33, 41, 57, 73, 89, 105], ["-1D4", "0", "1D4", "1D6", "2D6", "3D6", "4D6", "5D6", "6D6"]);
+    const bonDeg = calculBonusDegats(forTai, [13, 25, 33, 41, 57, 73, 89, 105, 121, 137, 153, 169, 185, 201, 217, 233, 249, 265], ["-1D4", "0", "1D4", "1D6", "2D6", "3D6", "4D6", "5D6", "6D6", "7D6", "8D6", "9D6", "10D6", "11D6", "12D6", "13D6", "14D6", "15D6"]);
     const degSpi = calculBonusDegats(pouCha, [13, 25, 33, 41, 57, 73, 89, 105], ["1D3", "1D6", "1D6+1", "1D6+3", "2D6+3", "3D6+4", "4D6+5", "5D6+6", "6D6+7"]);
 
     // Affichage des résultats
@@ -245,12 +244,20 @@ function afficherAutres() {
     // Calcul des points de magie
     const pm = pou;
 
+    // Récupération de l'armure et du mouvement
+    utiliserRace(race);
+    mvt = raceData.deplac;
+    arm = raceData.armure;
+
     // Affichage des résultats
     document.getElementById("enc").innerHTML = "Encombrement maximal : " + enc;
     document.getElementById("pm").innerHTML = "Points de magie : " + pm;
+    document.getElementById("mvt").innerHTML = "Déplacement : " + mvt;
+    document.getElementById("armure").innerHTML = "Armure : " + arm;
 
-    // Afficher la section (si cachée)
-    showDiv();
+    // Afficher la section
+    let visible = true;
+    showDiv(visible);
 }
 
 
@@ -263,12 +270,19 @@ function afficherModComp() {
     let agi = 0, com = 0, conn = 0, mag = 0, man = 0;
 
     // Seuils et modificateurs
-    const seuils = [5, 9, 13, 17, 21, 25, 29];
-    const UnMods = [-5, 0, 0, 0, 5, 10, 15, 20];
-    const DeMods = [-10, -5, 0, 5, 10, 15, 20, 25];
-    const TrMods = [10, 5, 0, -5, -10, -15, -20, -25];
-    const QuMods = [5, 0, 0, 0, -5, -10, -15, -20];
-
+    // Générer les seuils jusqu'à 201
+    const seuils = genererSeuils(5, 4, 201);
+    // Modificateurs de base
+    const baseUnMods = [-5, 0, 0, 0, 5, 10, 15, 20];
+    const baseDeMods = [-10, -5, 0, 5, 10, 15, 20, 25];
+    const baseTrMods = [10, 5, 0, -5, -10, -15, -20, -25];
+    const baseQuMods = [5, 0, 0, 0, -5, -10, -15, -20];
+    
+    // Étendre les modificateurs avec la progression constante (delta)
+    const UnMods = etendreModificateurs(baseUnMods, 5, seuils.length);
+    const DeMods = etendreModificateurs(baseDeMods, 5, seuils.length);
+    const TrMods = etendreModificateurs(baseTrMods, -5, seuils.length);
+    const QuMods = etendreModificateurs(baseQuMods, -5, seuils.length);
 
     // Modificateur d'agilité basé sur STR, DEX, TAI et POU
     agi += calculModComp(str, seuils, UnMods);
@@ -343,20 +357,33 @@ function getRandomInt(min, max) {
 function lancerDes(diceStr) {
     const diceRegex = /(\d+)d(\d+)([+-]\d+)?/;  // Regex pour parser des types comme '3d6+6'
     const matches = diceStr.match(diceRegex);
-    
+
     if (matches) {
         const nbDes = parseInt(matches[1]);     // Nombre de dés à lancer
         const faces = parseInt(matches[2]);     // Nombre de faces du dé (par exemple, 6)
         const modificateur = parseInt(matches[3]) || 0; // Modificateur optionnel (+ ou - un nombre)
-
+        
+        let resultats = [];
         let total = 0;
-        for (let i = 0; i < nbDes; i++) {
-            total += getRandomInt(1, faces);   // Lancer chaque dé
+
+        // Lancer un dé supplémentaire
+        const nbDesLances = nbDes + 1;
+
+        for (let i = 0; i < nbDesLances; i++) {
+            resultats.push(getRandomInt(1, faces));   // Lancer chaque dé
         }
-        total += modificateur;                // Ajouter ou soustraire le modificateur
+
+        // Retirer le plus bas
+        const minValeur = Math.min(...resultats);  // Trouver le plus petit résultat
+        resultats.splice(resultats.indexOf(minValeur), 1);  // Retirer le plus petit
+
+        // Calculer la somme des dés restants
+        total = resultats.reduce((acc, val) => acc + val, 0) + modificateur;
+
         return total;
     } else {
-        return 0; // Si la chaîne n'est pas dans le format attendu, renvoie 0
+        console.error("Erreur : Format de dés incorrect. Utilise 'NdX+Y' par exemple '3d6+2'.");
+        return null;  // Renvoie null en cas de format incorrect
     }
 }
 
@@ -563,17 +590,19 @@ function ajouterPvActuel(pvActuel) {
     tableauPvActuel.push(pvActuel);  // Ajouter la valeur de pvActuel dans le tableau
 }
 
-// Fonction pour rendre visible mvt
-function showDiv() {
+// Fonction pour rendre les div 'mvt' et 'armure' visible ou invisible
+function showDiv(visible) {
     const div = document.getElementById("mvt");
-    div.style.display = "block";  // Rend la div visible
+    const div2 = document.getElementById("armure");
+    if (visible) {
+        div.style.display = "block";  // Rend la div visible
+        div2.style.display = "block";  // Rend la div visible
+    } else {
+        div.style.display = "none";   // Cache la div
+        div2.style.display = "none";   // Cache la div
+    }
 }
 
-// Fonction pour rendre invisible mvt
-function hideDiv() {
-    const div = document.getElementById("mvt");
-    div.style.display = "none";  // Rend la div invisible
-}
 
 // Fonction de reset
 function reset() {
@@ -625,7 +654,8 @@ function reset() {
     }
 
     effacerDivsLoca();
-    hideDiv();
+    let visible = false;
+    showDiv(visible);
     // etatPerso(pv);
     effacerResume();
 
@@ -957,70 +987,82 @@ function conditionsSante(cle, degats, pvMembre, pvMembreMax) {
     const raceData = raceDiceData[race];  // Récupérer les données pour la race actuelle
     let importLoca = raceData[importKeys[cle]];
     spanConId = "conId" + cle;
+    if (degats >= 3 * pvMembreMax) {
+        if (importLoca === "i") {
+            ko[cle] = true;
+            membreTranche[cle] = true;
+            detruit[cle] = false;
+        } else {
+            detruit[cle] = true;
+            ko[cle] = true;
+            oneShot[cle] = true;
+        }
+    } else if (degats >= 2 * pvMembreMax) {
+        if (importLoca === "i") {
+            detruit[cle] = false;
+            // membre inutilisable
+            contenuCondition[cle] = "Le membre est inutilisable.";
+            titreCondition[cle] = "Membre inutilisable";
+        } else {
+            detruit[cle] = false;
+            ko[cle] = true;
+            // hemorragie
+            contenuCondition[cle] = "Vous vous videz de votre sang";
+            titreCondition[cle] = "Blessure importante";
+        }
+    } else if (pvMembre <= -pvMembreMax) {
+        if (importLoca === "i") {
+            detruit[cle] = false;
+            ko[cle] = false;
+            // membre inutilisable
+            contenuCondition[cle] = "Le membre est inutilisable.";
+            titreCondition[cle] = "Membre inutilisable";
+        } else {
+            detruit[cle] = false;
+            ko[cle] = true;
+            // hemorragie
+            contenuCondition[cle] = "Vous vous videz de votre sang";
+            titreCondition[cle] = "Blessure importante";
+        }
+    } else if (pvMembre <= 0) {
+        if (importLoca === "i") {
+            detruit[cle] = false;
+            ko[cle] = false;
+            // membre inutilisable
+            contenuCondition[cle] = "Le membre est inutilisable.";
+            titreCondition[cle] = "Membre inutilisable";
+        } else if (importLoca === "ik") {
+            detruit[cle] = false;
+            ko[cle] = false;
+            // jambes inutilisables
+            contenuCondition[cle] = "Vos jambes sont inutilisables.";
+            titreCondition[cle] = "Jambes inutilisables";
+        } else if (importLoca === "h") {
+            detruit[cle] = false;
+            ko[cle] = false;
+            contenuCondition[cle] = "Vous toussez du sang !";
+            titreCondition[cle] = "hemorragie interne";
+        } else {
+            detruit[cle] = false;
+            ko[cle] = true;
+            contenuCondition[cle] = "Vous sombrez dans l'inconscience";
+            titreCondition[cle] = "Assomé";
+        }
+    } else if (pvMembre > 0){
+        detruit[cle] = false;
+        ko[cle] = false;
+        contenuCondition[cle] = "Tout va bien !";
+        titreCondition[cle] = "Normal";
+    }
     if (membreTranche[cle] == true) {
         contenuCondition[cle] = "Ouch mauvais signe";
         titreCondition[cle] = "Membre tranché";
-    } else {
-        if (degats >= 3 * pvMembreMax) {
-            if (importLoca == "i") {
-                ko[cle] = true;
-                membreTranche[cle] = true;
-            } else {
-                detruit[cle] = true;
-                contenuCondition[cle] = "Il est toujours temps de prier";
-                titreCondition[cle] = "Mort sur le coup";
-            }
-        } else if (degats >= 2 * pvMembreMax) {
-            if (importLoca == "i") {
-                detruit[cle] = false;
-                // membre inutilisable
-                console.log("membre inutilisable");
-            } else {
-                detruit[cle] = false;
-                ko[cle] = true;
-                // hemorragie
-                console.log("hemorragie");
-            }
-        } else if (pvMembre <= -pvMembreMax) {
-            if (importLoca == "i") {
-                detruit[cle] = false;
-                ko[cle] = false;
-                // membre inutilisable
-                console.log("membre inutilisable");
-            } else {
-                detruit[cle] = false;
-                ko[cle] = true;
-                // hemorragie
-                console.log("hemorragie");
-            }
-        } else if (pvMembre <= 0) {
-            if (importLoca == "i") {
-                detruit[cle] = false;
-                ko[cle] = false;
-                // membre inutilisable
-                console.log("membre inutilisable");
-            } else if (importLoca == "ik") {
-                detruit[cle] = false;
-                ko[cle] = false;
-                // jambes inutilisables
-                console.log("jambes inutilisables");
-            } else if (importLoca == "h") {
-                detruit[cle] = false;
-                ko[cle] = false;
-                contenuCondition[cle] = "Vous toussez du sang !";
-                titreCondition[cle] = "hemorragie interne";
-            } else {
-                detruit[cle] = false;
-                ko[cle] = true;
-                console.log("ko");
-            }
-        } else if (pvMembre > 0){
-            detruit[cle] = false;
-            ko[cle] = false;
-            contenuCondition[cle] = "Tout va bien !";
-            titreCondition[cle] = "Normal";
-            console.log("Normal");
-        }}
+    }
+    if (oneShot[cle] == true) {
+        contenuCondition[cle] = "Il est toujours temps de prier";
+        titreCondition[cle] = "Mort sur le coup";
+        detruit[cle] = true;
+    }
 }
 
 // Fponction pour remettre à zéro les conditions des membres
@@ -1070,4 +1112,23 @@ function conditionPerso() {
     inconsc.textContent = inconscient ? "Inconscient" : "Conscient";
 }
 
+// Générer les seuils
+function genererSeuils(initial, intervalle, max) {
+    let seuils = [];
+    for (let i = initial; i <= max; i += intervalle) {
+        seuils.push(i);
+    }
+    return seuils;
+}
 
+// Fonction pour étendre les modificateurs avec une progression constante
+function etendreModificateurs(baseMods, delta, steps) {
+    let mods = [...baseMods]; // Démarrer avec les valeurs de base
+
+    for (let i = baseMods.length; i < steps; i++) {
+        let nextValue = mods[mods.length - 1] + delta;
+        mods.push(nextValue);
+    }
+
+    return mods;
+}
