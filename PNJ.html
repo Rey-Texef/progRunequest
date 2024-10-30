@@ -17,58 +17,49 @@
     </nav>
     
     <section>
+        <div>
+            <form id="formRadio">
+                <p>Choisissez une option :</p>
+                
+                <label>
+                  <input type="radio" name="option" value="option1">
+                  Races ainées
+                </label><br>
+                <label>
+                  <input type="radio" name="option" value="option2">
+                  Monstres du Chaos
+                </label><br>
+                <label>
+                  <input type="radio" name="option" value="option3">
+                  Monstres
+                </label>
+                <label>
+                  <input type="radio" name="option" value="option4">
+                  Arthropodes géants
+                </label>
+                <label>
+                  <input type="radio" name="option" value="option5">
+                  Animaux
+                </label>
+                <label>
+                  <input type="radio" name="option" value="option6">
+                  Esprits
+                </label>
+                <label>
+                  <input type="radio" name="option" value="option7">
+                  Terreurs
+                </label>
+                <label>
+                  <input type="radio" name="option" value="option8">
+                  Flore
+                </label>
+              </form>
+              
+        </div>
         <div id="list">
             <label for="race">Choix de la race : </label>
             <select id="race" name="races">
-                <option value="" disabled selected id="valeurOrigine">-- Sélectionnez une race --</option>
-                <option value="humain">Humain</option>
-                <optgroup label="Aldryami">
-                    <option value="coureur">Coureur</option>
-                    <option value="dryad">Dryade</option>
-                    <option value="elfBleu">Elfe bleu</option>
-                    <option value="elfBrun">Elfe brun</option>
-                    <option value="elfJaune">Elfe jaune</option>
-                    <option value="elfNoir">Elfe noir</option>
-                    <option value="elfVert">Elfe vert</option>
-                    <option value="pixie">Pixie</option>
-                </optgroup>
-                <option value="archer">Archer de Pierrevierge</option>
-                <option value="babouin">Babouin</option>
-                <optgroup label="Hommes bêtes">
-                    <option value="canard">Canard</option>
-                    <option value="centaure">Centaure</option>
-                    <option value="femmeRen">Femme-renard (humaine)</option>
-                    <option value="femRenard">Femme-renard (renard)</option>
-                    <option value="manticore">Manticore</option>
-                    <option value="minotaure">Minotaure</option>
-                    <option value="satyre">Satyre</option>
-                </optgroup>
-                <optgroup label="Dragonewts">
-                    <option value="dragCret">Dragonewt à crête</option>
-                    <option value="dragBec">Dragonewt à bec</option>
-                    <option value="pretreQueue">Prêtre à queue (dragonewt)</option>
-                    <option value="pretreAile">Prêtre ailé (dragonewt)</option>
-                </optgroup>
-                <option value="enfantVent">Enfant du vent</option>
-                <option value="frereLoup">Frère-loup (humain)</option>
-                <option value="frerLoup">Frère-loup (loup)</option>
-                <option value="geant">Géant</option>
-                <option value="gorille">Gorille</option>
-                <option value="hommeDemi">Homme-et-demi</option>
-                <option value="monteSanglier">Monteur de sanglier</option>
-                <option value="morokanth">Morokanth</option>
-                <optgroup label="Mostali">
-                    <option value="mostali">Mostali</option>
-                    <option value="gobeur">Gobeur</option>
-                    <option value="jolanti">Jolanti</option>
-                    <option value="nilmerg">Nilmerg</option>
-                </optgroup>
-                
-                <option value=""></option>
-                <option value=""></option>
-                <option value=""></option>
-                <option value=""></option>
-                <option value=""></option>
+                <option value="">-- Sélectionnez une race --</option>
             </select>
         </div>
         <div id="tout">
@@ -136,6 +127,7 @@
                         <div id="enc"></div>
                         <div id="mvt"></div>
                         <div id="armure"></div>
+                        <div id="page"></div>
                     </div>
                     <div class="categorie">
                         <h3>Mods de compétences</h3>

@@ -403,3 +403,13 @@ h3 {
     left: 50%;
 }
 
+input[type="radio"] {
+    accent-color: #4CAF50; /* Change la couleur de l'accent */
+    margin-left: 30px;
+  }
+
+#formRadio {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}

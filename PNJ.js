@@ -59,9 +59,54 @@ let oneShot = [false, false, false, false, false, false, false, false, false, fa
 
 let raceDiceData;  // Variable globale pour stocker les données du JSON
 
+// Selection de la catégorie via l'input radio
+document.querySelectorAll('input[name="option"]').forEach((radio) => {
+    radio.addEventListener('change', () => {
+        const selectedValue = radio.value;
+        loadRaceData("reset");
+        switch (selectedValue) {
+            case "option1":
+                loadRaceData("races.json");
+                break;
+            case "option2":
+                loadRaceData("chaos.json");
+                break;
+            case "option3":
+                loadRaceData("monster.json");
+                break;
+            case "option4":
+                loadRaceData("arthro.json");
+                break;
+            case "option5":
+                loadRaceData("animal.json");
+                break;
+            case "option6":
+                loadRaceData("spirit.json");
+                break;
+            case "option7":
+                loadRaceData("terror.json");
+                break;
+            case "option8":
+                loadRaceData("flore.json");
+                break;
+            default:
+                // Bloc de code exécuté si aucune des valeurs ne correspond
+        }
+    });
+});
+
 // Fonction pour charger les données du fichier JSON
-function loadRaceData() {
-    return fetch('races.json')
+function loadRaceData(fileJson) {
+    // Vérifie si l'argument est 'reset'
+    if (fileJson === 'reset') {
+        raceDiceData = null;  // Vide raceDiceData
+        const raceSelect = document.getElementById("race");
+        raceSelect.innerHTML = '<option value="">-- Sélectionnez une race --</option>';
+        return;  // Sort de la fonction
+    }
+
+    // Si l'argument n'est pas 'reset', continue le chargement des données
+    return fetch(fileJson)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Erreur lors du chargement du fichier JSON');
@@ -70,56 +115,95 @@ function loadRaceData() {
         })
         .then(data => {
             raceDiceData = data;  // Stocke les données dans la variable globale
+            populateRaceDropdown();  // Appelle la fonction pour remplir la liste déroulante
         })
         .catch(error => {
             console.error('Erreur:', error);
         });
 }
 
-function utiliserRace(race) {
-    if (raceDiceData) {  // Vérifie si les données sont chargées
-        raceData = raceDiceData[race];  // Récupère les données pour la race sélectionnée
-        // Fais quelque chose avec raceData...
-    } else {
-        console.log("Les données de race ne sont pas encore chargées.");
+// Fonction récursive pour créer la liste déroulante avec optgroup imbriqués
+function createOptions(parentElement, data) {
+    for (const key in data) {
+        if (data.hasOwnProperty(key)) {
+            const item = data[key];
+
+            if (typeof item === 'object' && !item.str) {  // Vérifie si l'item est un objet sans attributs de race
+                // Crée un optgroup pour la catégorie ou sous-catégorie
+                const optgroup = document.createElement("optgroup");
+                optgroup.label = key;
+
+                // Appelle récursivement la fonction pour les sous-catégories ou races dans la catégorie actuelle
+                createOptions(optgroup, item);
+
+                // Ajoute le groupe d'options à l'élément parent
+                parentElement.appendChild(optgroup);
+            } else {
+                // Crée une option pour la race
+                const option = document.createElement("option");
+                option.value = key;
+                option.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+                parentElement.appendChild(option);
+            }
+        }
     }
 }
 
-// Appel de la fonction pour charger les données dès le début
-loadRaceData();
+// Fonction pour remplir la liste déroulante avec les données JSON
+function populateRaceDropdown() {
+    const raceSelect = document.getElementById("race");
+    raceSelect.innerHTML = '<option value="">-- Sélectionnez une race --</option>';
+
+    // Appelle la fonction récursive avec l'élément de base (select) et les données JSON
+    createOptions(raceSelect, raceDiceData);
+}
+
+// Fonction récursive pour retrouver les données d'une race par son nom, même si elle est dans une sous-catégorie
+function findRaceData(raceName, data) {
+    if (data[raceName]) {
+        return data[raceName];
+    }
+
+    for (const key in data) {
+        if (typeof data[key] === 'object') {
+            const result = findRaceData(raceName, data[key]);
+            if (result) {
+                return result;
+            }
+        }
+    }
+    return null;
+}
 
 // Fonction pour afficher les dés selon la race
-function afficherDes() {
-    if (race in raceDiceData) {
-        // Récupérer les données pour la race sélectionnée
-        const diceValues = raceDiceData[race];
-        
+function afficherDes(race) {
+    const raceData = findRaceData(race, raceDiceData);  // Utilise findRaceData pour rechercher la race
+
+    if (raceData) {
         // Appliquer les valeurs des dés aux divs
-        document.getElementById("strDice").innerHTML = diceValues.str;
-        document.getElementById("conDice").innerHTML = diceValues.con;
-        document.getElementById("taiDice").innerHTML = diceValues.tai;
-        document.getElementById("dexDice").innerHTML = diceValues.dex;
-        document.getElementById("intDice").innerHTML = diceValues.int;
-        document.getElementById("pouDice").innerHTML = diceValues.pou;
-        document.getElementById("chaDice").innerHTML = diceValues.cha;
+        document.getElementById("strDice").innerHTML = raceData.str || "Valeur non définie";
+        document.getElementById("conDice").innerHTML = raceData.con || "Valeur non définie";
+        document.getElementById("taiDice").innerHTML = raceData.tai || "Valeur non définie";
+        document.getElementById("dexDice").innerHTML = raceData.dex || "Valeur non définie";
+        document.getElementById("intDice").innerHTML = raceData.int || "Valeur non définie";
+        document.getElementById("pouDice").innerHTML = raceData.pou || "Valeur non définie";
+        document.getElementById("chaDice").innerHTML = raceData.cha || "Valeur non définie";
+    } else {
+        console.log("Les données de dés pour la race sélectionnée ne sont pas disponibles.");
     }
 }
+
 
 // Fonction pour récupérer la race et afficher les dés en conséquence
 document.getElementById("race").addEventListener("change", function() {
-    const x = document.getElementById("race").selectedIndex;
-    
-    if (x != 0) {
-        document.getElementById("boutonRecherche").style.display = "inline-block";
-        document.getElementById("boutonAleatoire").style.display = "inline-block";
-        document.getElementById("boutonReset").style.display = "inline-block";
-    }
-
-    // Récupérer la race sélectionnée
     race = this.value;
-    afficherDes();  // Mettre à jour les valeurs des dés
+    afficherDes(race);
     genererLocalisations(race);
+    document.getElementById("boutonRecherche").style.display = "inline-block";
+    document.getElementById("boutonAleatoire").style.display = "inline-block";
+    document.getElementById("boutonReset").style.display = "inline-block";
 });
+
 
 // Fonction de récupération des valeurs
 function recupVal() {
@@ -245,15 +329,22 @@ function afficherAutres() {
     const pm = pou;
 
     // Récupération de l'armure et du mouvement
-    utiliserRace(race);
+    // Récupérer directement les données de la race en utilisant findRaceData
+    const raceData = findRaceData(race, raceDiceData);  
+    if (!raceData) {
+        console.log("Impossible de générer les localisations : les données de race ne sont pas définies.");
+        return;
+    }
     mvt = raceData.deplac;
     arm = raceData.armure;
+    page = raceData.page;
 
     // Affichage des résultats
     document.getElementById("enc").innerHTML = "Encombrement maximal : " + enc;
     document.getElementById("pm").innerHTML = "Points de magie : " + pm;
     document.getElementById("mvt").innerHTML = "Déplacement : " + mvt;
     document.getElementById("armure").innerHTML = "Armure : " + arm;
+    document.getElementById("page").innerHTML = "Page : " + page;
 
     // Afficher la section
     let visible = true;
@@ -418,6 +509,13 @@ document.getElementById("boutonAleatoire").addEventListener("click", function() 
 document.getElementById("boutonReset").addEventListener("click", reset);
 
 function genererLocalisations(race) {
+    // Récupérer directement les données de la race en utilisant findRaceData
+    const raceData = findRaceData(race, raceDiceData);  
+    if (!raceData) {
+        console.log("Impossible de générer les localisations : les données de race ne sont pas définies.");
+        return;
+    }
+
     // Vider les anciennes localisations
     locaDiv.innerHTML = '<div class="titreLoca">Localisation</div>';
     dVingtDiv.innerHTML = '<div class="titreLoca">D20</div>';
@@ -432,11 +530,7 @@ function genererLocalisations(race) {
         // Ton code pour modifier le `span`
     }, 100);  // Attendre 100 millisecondes
     
-    utiliserRace(race);  // Récupérer les données de la race sélectionnée
-    if (!raceData) {
-        console.log("Impossible de générer les localisations : les données de race ne sont pas définies.");
-        return;
-    }
+    
 
     for (let i = 1; i <= 10; i++) {
         const key = `loca${i}`;  // Générer la clé (loca1, loca2, etc.)
@@ -578,9 +672,11 @@ function effacerDivsLoca() {
 function calculerPvMembre(type) {
     let basePv = Math.ceil(pv / 3);
     switch (type) {
-        case "a": return Math.max(basePv, 2);
-        case "b": return Math.max(basePv + 1, 3);
-        case "c": return Math.max(basePv - 1, 1);
+        case "0": return Math.max(basePv, 2);
+        case "P1": return Math.max(basePv + 1, 3);
+        case "P3": return Math.max(basePv + 3, 5);
+        case "P4": return Math.max(basePv + 4, 6);
+        case "M1": return Math.max(basePv - 1, 1);
         default: return Math.max(basePv - 2, 1);
     }
 }
@@ -594,15 +690,17 @@ function ajouterPvActuel(pvActuel) {
 function showDiv(visible) {
     const div = document.getElementById("mvt");
     const div2 = document.getElementById("armure");
+    const div3 = document.getElementById("page");
     if (visible) {
         div.style.display = "block";  // Rend la div visible
         div2.style.display = "block";  // Rend la div visible
+        div3.style.display = "block";  // Rend la div visible
     } else {
         div.style.display = "none";   // Cache la div
         div2.style.display = "none";   // Cache la div
+        div3.style.display = "none";   // Cache la div
     }
 }
-
 
 // Fonction de reset
 function reset() {
@@ -667,6 +765,11 @@ function reset() {
     detruits = false;
     resetCondMembre();
     compteurBoutonSoin = 0;
+
+    // Décochage des options
+    const radios = document.querySelectorAll('input[name="option"]');
+    radios.forEach(radio => radio.checked = false);  // Désélectionner toutes les options
+    loadRaceData("reset");
 }
 
 window.onload = reset;
@@ -703,7 +806,12 @@ document.getElementById("atk").addEventListener("click", function() {
             }, 400); // 0.3s pour l'animation et 0.1s avant qu'elle commence
 
             // Récupération de l'index
-            const raceData = raceDiceData[race];
+            // Récupérer directement les données de la race en utilisant findRaceData
+            const raceData = findRaceData(race, raceDiceData);  
+            if (!raceData) {
+                console.log("Impossible de générer les localisations : les données de race ne sont pas définies.");
+                return;
+            }
             let id = input.id;
             let cle = parseInt(id.match(/\d+/)[0], 10); // Récupère la partie numérique de l'ID et la convertit en entier
             let loca = raceData[localisationKeys[cle]]
@@ -984,7 +1092,13 @@ document.getElementById("majArmure").addEventListener("click", function() {
 
 // Fonction pour mettre à jour les conditions des membres
 function conditionsSante(cle, degats, pvMembre, pvMembreMax) {
-    const raceData = raceDiceData[race];  // Récupérer les données pour la race actuelle
+    
+    // Récupérer directement les données de la race en utilisant findRaceData
+    const raceData = findRaceData(race, raceDiceData);  
+    if (!raceData) {
+        console.log("Impossible de générer les localisations : les données de race ne sont pas définies.");
+        return;
+    }
     let importLoca = raceData[importKeys[cle]];
     spanConId = "conId" + cle;
     if (degats >= 3 * pvMembreMax) {
