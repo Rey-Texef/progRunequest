@@ -23,6 +23,10 @@ let dis = 0;
 let valeurs = recupVal();
 let compteurBoutonSoin = 0;
 let raceData;
+let compCombat = 0;
+let bonusDegats = 0;
+let rangCac = 0;
+let rangDist = 0;
 
 // Sélectionner les éléments HTML où insérer les localisations
 const locaDiv = document.getElementById("loca");
@@ -32,6 +36,11 @@ const pvDiv = document.getElementById("pvLoca");
 const armBonDiv = document.getElementById("armBon");
 const degDiv = document.getElementById("degats");
 const conDiv = document.getElementById("condition");
+const armeDiv = document.getElementById("arme");
+const compDiv = document.getElementById("pourcent");
+const degatsDiv = document.getElementById("degatArme");
+const rangDiv = document.getElementById("ra");
+const duraDiv = document.getElementById("dura");
 
 // Sélectionne la div parent qui contient les inputs d'armure
 let armureBon = document.getElementById("armBon");
@@ -45,23 +54,37 @@ const dVingtKeys = ["locaNumUn", "locaNumDeux", "locaNumTrois", "locaNumQuatre",
 const armKeys = ["locaArmUn", "locaArmDeux", "locaArmTrois", "locaArmQuatre", "locaArmCinq", "locaArmSix", "locaArmSept", "locaArmHuit", "locaArmNeuf", "locaArmDix"];
 const pvKeys = ["locaPvUn", "locaPvDeux", "locaPvTrois", "locaPvQuatre", "locaPvCinq", "locaPvSix", "locaPvSept", "locaPvHuit", "locaPvNeuf", "locaPvDix"];
 const importKeys = ["locaImportUn", "locaImportDeux", "locaImportTrois", "locaImportQuatre", "locaImportCinq", "locaImportSix", "locaImportSept", "locaImportHuit", "locaImportNeuf", "locaImportDix"];
+const armeKeys = ["arme1", "arme2", "arme3", "arme4", "arme5", "arme6", "arme7", "arme8", "arme9", "arme10"];
+const armeDescriptionKeys = ["armeD1", "armeD2", "armeD3", "armeD4", "armeD5", "armeD6", "armeD7", "armeD8", "armeD9", "armeD10"];
+const compKeys = ["comp1", "comp2", "comp3", "comp4", "comp5", "comp6", "comp7", "comp8", "comp9", "comp10"];
+const degatsKeys = ["deg1", "deg2", "deg3", "deg4", "deg5", "deg6", "deg7", "deg8", "deg9", "deg10"];
+const lanceKeys = ["lance1", "lance2", "lance3", "lance4", "lance5", "lance6", "lance7", "lance8", "lance9", "lance10"];
+const rangKeys = ["rg1", "rg2", "rg3", "rg4", "rg5", "rg6", "rg7", "rg8", "rg9", "rg10"];
+const distanceKeys = ["distance1", "distance2", "distance3", "distance4", "distance5", "distance6", "distance7", "distance8", "distance9", "distance10"];
+const duraKeys =["dura1", "dura2", "dura3", "dura4", "dura5", "dura6", "dura7", "dura8", "dura9", "dura10"];
 let armBonKeys = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 let pvTotalMbKeys = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 let pvMaxKeys = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 let tableauArmure = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 let tableauDegats = [];
+durabilityKeys = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 let ko = [false, false, false, false, false, false, false, false, false, false];
 let detruit = [false, false, false, false, false, false, false, false, false, false];
 let contenuCondition = ["Tout va bien !", "Tout va bien !", "Tout va bien !", "Tout va bien !", "Tout va bien !", "Tout va bien !", "Tout va bien !", "Tout va bien !", "Tout va bien !", "Tout va bien !"];
 let titreCondition = ["Normal", "Normal", "Normal", "Normal", "Normal", "Normal", "Normal", "Normal", "Normal", "Normal"];
 let membreTranche = [false, false, false, false, false, false, false, false, false, false];
+let choc = [false, false, false, false, false, false, false, false, false, false];
 let oneShot = [false, false, false, false, false, false, false, false, false, false];
+let compKey = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+let titreOnglet = document.getElementById("titreOnglet");
 
 let raceDiceData;  // Variable globale pour stocker les données du JSON
 
 // Selection de la catégorie via l'input radio
 document.querySelectorAll('input[name="option"]').forEach((radio) => {
     radio.addEventListener('change', () => {
+        miniReset();
         const selectedValue = radio.value;
         loadRaceData("reset");
         switch (selectedValue) {
@@ -85,9 +108,6 @@ document.querySelectorAll('input[name="option"]').forEach((radio) => {
                 break;
             case "option7":
                 loadRaceData("terror.json");
-                break;
-            case "option8":
-                loadRaceData("flore.json");
                 break;
             default:
                 // Bloc de code exécuté si aucune des valeurs ne correspond
@@ -198,6 +218,7 @@ function afficherDes(race) {
 document.getElementById("race").addEventListener("change", function() {
     race = this.value;
     afficherDes(race);
+    affichDura(race);
     genererLocalisations(race);
     document.getElementById("boutonRecherche").style.display = "inline-block";
     document.getElementById("boutonAleatoire").style.display = "inline-block";
@@ -312,7 +333,10 @@ function afficherRangs() {
     // Affichage des résultats
     document.getElementById("rangTai").innerHTML = "Rang d'action de Tai : " + rangTai;
     document.getElementById("rangDex").innerHTML = "Rang d'action de Dex : " + rangDex;
+    rangCac = rangTai + rangDex;
+    rangDist = rangDex;
     document.getElementById("bonDeg").innerHTML = "Bonus aux dégâts : " + bonDeg;
+    bonusDegats = bonDeg;
     document.getElementById("degSpi").innerHTML = "Dégâts spirituels : " + degSpi;
 }
 
@@ -417,6 +441,9 @@ function afficherModComp() {
     document.getElementById("conn").innerHTML = "Mod Connaissances : " + conn;
     document.getElementById("mag").innerHTML = "Mod Magie : " + mag;
     document.getElementById("man").innerHTML = "Mod Manipulation : " + man;
+    compCombat = man;
+    document.getElementById("per").innerHTML = "Mod Perception : " + per;
+    document.getElementById("dis").innerHTML = "Mod Discrétion : " + dis;
 }
 
 // Fonction pour calculer le modificateur de compétence en fonction des valeurs seuils
@@ -435,8 +462,9 @@ document.getElementById("boutonRecherche").addEventListener("click", function na
     afficherRangs();
     afficherAutres();
     afficherModComp();
+    affichDura(race);
     genererLocalisations(race);
-    // etatPerso(pv);
+    conditionPerso();
 });
 
 // Fonction pour générer un nombre entier aléatoire entre min et max inclus
@@ -444,16 +472,23 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// Fonction pour lancer des dés, par exemple '3d6' ou '2d6+6'
+// Fonction pour lancer des dés, par exemple '3d6', '2d6+6', ou '3d6*2'
 function lancerDes(diceStr) {
-    const diceRegex = /(\d+)d(\d+)([+-]\d+)?/;  // Regex pour parser des types comme '3d6+6'
+    // Si diceStr est un nombre, on retourne directement ce nombre
+    if (!isNaN(diceStr)) {
+        return Number(diceStr);
+    }
+
+    // Regex pour parser des types comme '3d6*2', '3d6+6' ou '3d6'
+    const diceRegex = /(\d+)d(\d+)([+-]\d+)?(\*\d+)?/;
     const matches = diceStr.match(diceRegex);
 
     if (matches) {
         const nbDes = parseInt(matches[1]);     // Nombre de dés à lancer
-        const faces = parseInt(matches[2]);     // Nombre de faces du dé (par exemple, 6)
+        const faces = parseInt(matches[2]);     // Nombre de faces du dé
         const modificateur = parseInt(matches[3]) || 0; // Modificateur optionnel (+ ou - un nombre)
-        
+        const multiplicateur = matches[4] ? parseInt(matches[4].slice(1)) : 1; // Multiplicateur optionnel
+
         let resultats = [];
         let total = 0;
 
@@ -471,12 +506,15 @@ function lancerDes(diceStr) {
         // Calculer la somme des dés restants
         total = resultats.reduce((acc, val) => acc + val, 0) + modificateur;
 
+        // Appliquer le multiplicateur
+        total *= multiplicateur;
+
         return total;
     } else {
-        console.error("Erreur : Format de dés incorrect. Utilise 'NdX+Y' par exemple '3d6+2'.");
-        return null;  // Renvoie null en cas de format incorrect
+        return 0;  // Renvoie 0 en cas de format incorrect
     }
 }
+
 
 // Fonction pour générer des valeurs aléatoires dans les inputs en fonction des dés
 function genererValeursAleatoires() {
@@ -501,13 +539,15 @@ document.getElementById("boutonAleatoire").addEventListener("click", function() 
     afficherRangs();
     afficherAutres();
     afficherModComp();
+    affichDura(race);
     genererLocalisations(race);
-    // etatPerso(pv);
+    conditionPerso();
 });
 
 // Bouton reset pour remettre à zero
 document.getElementById("boutonReset").addEventListener("click", reset);
 
+//Fonction pour générer les tableaux
 function genererLocalisations(race) {
     // Récupérer directement les données de la race en utilisant findRaceData
     const raceData = findRaceData(race, raceDiceData);  
@@ -529,10 +569,9 @@ function genererLocalisations(race) {
     setTimeout(function() {
         // Ton code pour modifier le `span`
     }, 100);  // Attendre 100 millisecondes
-    
-    
 
     for (let i = 1; i <= 10; i++) {
+        // Tableau des localisations
         const key = `loca${i}`;  // Générer la clé (loca1, loca2, etc.)
         const x = parseInt(key.replace('loca', '')) - 1;
         let locaId = "locaId" + x;
@@ -554,7 +593,33 @@ function genererLocalisations(race) {
         let pvActuelMax = pvActuel + "/" + pvMax;
         tableauPvActuel.length = 0;  // Vider le tableau
         ajouterPvActuel(pvActuel);
-        conditionsSante(x, 0, pvActuel, pvMax)
+        conditionsSante(x, 0, pvActuel, pvMax);
+        
+        // Tableau des armes
+        let armeId = "armeId" + x;
+        let compId = "compId" + x;
+        let degatId = "degatId" + x;
+        let rangId = "rangId" + x;
+        let duraId = "duraId" + x;
+        const armeKey = raceData[armeKeys[x]];
+        const armeDescriptionKey = raceData[armeDescriptionKeys[x]];
+        const distKey = raceData[distanceKeys[x]];
+        const rangArme = raceData[rangKeys[x]];
+        let rangKey = 0;
+        let degatsKey = 0;
+        if (distKey == true) {
+            rangKey = rangArme + rangDist;
+        } else {
+            rangKey = rangArme + rangCac;
+        }
+        const lanceKey = raceData[lanceKeys[x]];
+        if (lanceKey == false && distKey == true) {
+            degatsKey = raceData[degatsKeys[x]];
+        } else if (lanceKey == true && distKey == true) {
+            degatsKey = raceData[degatsKeys[x]] + " + " + bonusDegats + "/2";
+        } else {
+            degatsKey = raceData[degatsKeys[x]] + " + " + bonusDegats;
+        }
 
         if (localisation != "") {
             // Créer une case pour la localisation
@@ -571,6 +636,18 @@ function genererLocalisations(race) {
             ajouterInput(degDiv, 0, degId);
             // Créer une case pour la condition
             ajouterCelluleSpan(conDiv, contenuCondition[x], titreCondition[x], conId);
+        }
+        if (armeKey != "") {
+            // Créer une case pour l'arme
+            ajouterCelluleSpan(armeDiv, armeDescriptionKey, armeKey, armeId);
+            // Créer une case pour la comp
+            ajouterInput(compDiv, compKey[x], compId);
+            // Créer une case pour les dégâts
+            ajouterCellule(degatsDiv, degatsKey, degatId);
+            // Créer une case pour l'init
+            ajouterCellule(rangDiv, rangKey, rangId);
+            // Créer une case pour la durabilité
+            ajouterInput(duraDiv, durabilityKeys[x], duraId);
         }
     }
 }
@@ -674,8 +751,10 @@ function calculerPvMembre(type) {
     switch (type) {
         case "0": return Math.max(basePv, 2);
         case "P1": return Math.max(basePv + 1, 3);
+        case "P2": return Math.max(basePv + 2, 4);
         case "P3": return Math.max(basePv + 3, 5);
         case "P4": return Math.max(basePv + 4, 6);
+        case "P5": return Math.max(basePv + 5, 7);
         case "M1": return Math.max(basePv - 1, 1);
         default: return Math.max(basePv - 2, 1);
     }
@@ -703,7 +782,7 @@ function showDiv(visible) {
 }
 
 // Fonction de reset
-function reset() {
+function miniReset() {
     document.getElementById("str").value = "";
     document.getElementById("con").value = "";
     document.getElementById("tai").value = "";
@@ -711,6 +790,7 @@ function reset() {
     document.getElementById("int").value = "";
     document.getElementById("pou").value = "";
     document.getElementById("cha").value = "";
+    document.getElementById("inpuText").value = "";
     
     // Réinitialiser l'affichage des caracs secondaires
     document.getElementById("pv").innerHTML = "";
@@ -749,6 +829,9 @@ function reset() {
     for (let i = 0; i < 10; i++) {
         armBonKeys[i] = 0;
         pvTotalMbKeys[i] = 0;
+        ko[i] = false;
+        durabilityKeys[i] = 0;
+        compKey[i] = 0;
     }
 
     effacerDivsLoca();
@@ -756,16 +839,23 @@ function reset() {
     showDiv(visible);
     // etatPerso(pv);
     effacerResume();
+    titreOnglet.textContent = "Runequest-Gestion PNJ";
 
     // Réinitialise les états
     inconscient = false;
     mort = false;
-    choc = false;
     kos = false;
     detruits = false;
     resetCondMembre();
     compteurBoutonSoin = 0;
-
+    conditionPerso();
+    compCombat = 0;
+    bonusDegats = 0;
+    rangCac = 0;
+    rangDist = 0;
+}
+function reset() {
+    miniReset();
     // Décochage des options
     const radios = document.querySelectorAll('input[name="option"]');
     radios.forEach(radio => radio.checked = false);  // Désélectionner toutes les options
@@ -786,24 +876,7 @@ document.getElementById("atk").addEventListener("click", function() {
     inputs.forEach(function(input) {
         let valeur = parseFloat(input.value); // Convertir la valeur en nombre
         if (valeur > 0) {
-            // Crée un élément div pour le flash
-            let flash = document.createElement("div");
-            flash.classList.add("flash-red");
-            // Ajoute l'effet de flash au body
-            document.body.appendChild(flash);
-            // Joue le son d'attaque
-            let atkSound = document.getElementById("atkSound");
-            // Modifie le volume du son (par exemple, à 50% du volume maximum)
-            atkSound.volume = 0.5;
-            atkSound.play();
-            // Lance une transition pour faire disparaître le flash après 0.5s
-            setTimeout(function() {
-                flash.classList.add("fade-out");
-            }, 100);
-            // Supprime le flash de l'écran après l'animation
-            setTimeout(function() {
-                flash.remove();
-            }, 400); // 0.3s pour l'animation et 0.1s avant qu'elle commence
+            sound("atkSound", "flash-red");
 
             // Récupération de l'index
             // Récupérer directement les données de la race en utilisant findRaceData
@@ -879,54 +952,26 @@ function ajouterResume(membreTouche, pertePv) {
 
     // Ajouter un écouteur d'événement à chaque bouton
     newButton.addEventListener("click", function() {
-        const raceData = raceDiceData[race];
+        const raceData = findRaceData(race, raceDiceData);  
+        if (!raceData) {
+            console.log("Impossible de générer les localisations : les données de race ne sont pas définies.");
+            return;
+        }
         let id = newButton.id;
         let cle = parseInt(id.match(/\d+/)[0], 10); // Récupère la partie numérique de l'ID et la convertit en entier
         let inputValue = parseInt(document.getElementById("inputSoin" + cle).value);
         let degatBlessure = tableauDegats[cle];
         inputValue = Math.min(inputValue, degatBlessure);
-        if (inputValue >= 0) {
-            // Crée un élément div pour le flash
-            let flash = document.createElement("div");
-            flash.classList.add("flashGreen");
-            // Ajoute l'effet de flash au body
-            document.body.appendChild(flash);
-            // Joue le son d'attaque
-            let soinSound = document.getElementById("soinSound");
-            // Modifie le volume du son (par exemple, à 50% du volume maximum)
-            soinSound.volume = 0.5;
-            soinSound.play();
-            // Lance une transition pour faire disparaître le flash après 0.5s
-            setTimeout(function() {
-                flash.classList.add("fade-out");
-            }, 100);
-            // Supprime le flash de l'écran après l'animation
-            setTimeout(function() {
-                flash.remove();
-            }, 400); // 0.3s pour l'animation et 0.1s avant qu'elle commence
-
+        if (inputValue > 0) {
+            sound("soinSound", "flashGreen");
             document.getElementById("soinDiv" + cle).textContent = "Soigné de " + inputValue + " PV.";
             document.getElementById("soinDiv" + cle).hidden = false;
+        } else if (inputValue == 0) {
+            sound("soinSound", "flashGreen");
+            document.getElementById("soinDiv" + cle).textContent = "Blessure stabilisée.";
+            document.getElementById("soinDiv" + cle).hidden = false;
         } else {
-            // Crée un élément div pour le flash
-            let flash = document.createElement("div");
-            flash.classList.add("flash-red");
-            // Ajoute l'effet de flash au body
-            document.body.appendChild(flash);
-            // Joue le son d'attaque
-            let sonDouleur = document.getElementById("sonDouleur");
-            // Modifie le volume du son (par exemple, à 50% du volume maximum)
-            sonDouleur.volume = 0.5;
-            sonDouleur.play();
-            // Lance une transition pour faire disparaître le flash après 0.5s
-            setTimeout(function() {
-                flash.classList.add("fade-out");
-            }, 100);
-            // Supprime le flash de l'écran après l'animation
-            setTimeout(function() {
-                flash.remove();
-            }, 400); // 0.3s pour l'animation et 0.1s avant qu'elle commence
-
+            sound("sonDouleur", "flash-red");
             document.getElementById("soinDiv" + cle).textContent = "Blessure aggravée de " + -inputValue + " PV.";
             document.getElementById("soinDiv" + cle).hidden = false;
         }
@@ -939,7 +984,8 @@ function ajouterResume(membreTouche, pertePv) {
         document.getElementById("pv").innerHTML = "PV Total : " + newPv + "/" + pv;
         document.getElementById("inputSoin" + cle).value = 0;
         // Modifier les PV du membre blessé
-        pvTotalMbKeys[index] -= inputValue;
+        newPvMembre = pvTotalMbKeys[index] - inputValue;
+        pvTotalMbKeys[index] = Math.max(newPvMembre, 0);
         newButton.disabled = true;
         newButton.classList.add("boutonStop");
         newButton.classList.remove("boutonSoin");
@@ -971,7 +1017,7 @@ let closeModalBtn = document.getElementById("closeModalBtn");
 
 // Lorsque l'utilisateur clique sur le bouton, afficher le modal
 openModalBtn.addEventListener("click", function() {
-    modal.style.display = "block";
+    modal.style.display = "flex";
     remplirModal(race);
 });
 
@@ -989,7 +1035,11 @@ window.addEventListener("click", function(event) {
 
 // Fonction pour remplir la modale
 function remplirModal(race) {
-    const raceData = raceDiceData[race];  // Récupérer les données de la race sélectionnée
+    const raceData = findRaceData(race, raceDiceData);  
+    if (!raceData) {
+        console.log("Impossible de générer les localisations : les données de race ne sont pas définies.");
+        return;
+    }
     
     // Parcourir les localisations (de 1 à 10)
     for (let i = 1; i <= 10; i++) {
@@ -1051,29 +1101,11 @@ let boutonSoinModal = document.getElementById("boutonModale");
 boutonSoinModal.addEventListener("click", function() {
     soinModal();
     conditionPerso();
-
-    // Crée un élément div pour le flash
-    let flash = document.createElement("div");
-    flash.classList.add("flashGreen");
-    // Ajoute l'effet de flash au body
-    document.body.appendChild(flash);
-    // Joue le son d'attaque
-    let soinSound = document.getElementById("soinSound");
-    // Modifie le volume du son (par exemple, à 50% du volume maximum)
-    soinSound.volume = 0.5;
-    soinSound.play();
-    // Lance une transition pour faire disparaître le flash après 0.5s
-    setTimeout(function() {
-        flash.classList.add("fade-out");
-    }, 100);
-    // Supprime le flash de l'écran après l'animation
-    setTimeout(function() {
-        flash.remove();
-    }, 400); // 0.3s pour l'animation et 0.1s avant qu'elle commence
+    sound("soinSound", "flashGreen");
 })
 
 // Fonction de mise à jour du tableau armBonKeys
-function mettreAJourArmBon(input) {
+function mettreAJourArmBon(input, input2, input3) {
     if (input) {
         let valeur = parseInt(input.value) || 0;  // Convertir en nombre, ou 0 si la valeur n'est pas valide
         let id = input.id;
@@ -1081,11 +1113,27 @@ function mettreAJourArmBon(input) {
         let cle = parseInt(id.match(/\d+/)[0], 10); // Convertit l'ID en index pour le tableau armBonKeys
         armBonKeys[cle] = valeur;  // Mettre à jour la valeur dans armBonKeys à l'index correspondant
     }
+    if (input2) {
+        let valeur = parseInt(input2.value) || 0;  // Convertir en nombre, ou 0 si la valeur n'est pas valide
+        let id = input2.id;
+        // Extraire la partie numérique de l'ID (par exemple, '1' à partir de 'dura1')
+        let cle = parseInt(id.match(/\d+/)[0], 10); // Convertit l'ID en index pour le tableau durabilityKeys
+        durabilityKeys[cle] = valeur;  // Mettre à jour la valeur dans durabilityKeys à l'index correspondant
+    }
+    if (input3) {
+        let valeur = parseInt(input3.value) || 0;  // Convertir en nombre, ou 0 si la valeur n'est pas valide
+        let id = input3.id;
+        // Extraire la partie numérique de l'ID (par exemple, '1' à partir de 'dura1')
+        let cle = parseInt(id.match(/\d+/)[0], 10); // Convertit l'ID en index pour le tableau compKey
+        compKey[cle] = valeur;  // Mettre à jour la valeur dans compKey à l'index correspondant
+    }
 }
 document.getElementById("majArmure").addEventListener("click", function() {
     for (let i = 0; i <= 10; i++) {
         let input = document.getElementById("armBonId" + i);
-        mettreAJourArmBon(input);
+        let input2 = document.getElementById("duraId" + i);
+        let input3 = document.getElementById("compId" + i);
+        mettreAJourArmBon(input, input2, input3);
     }
     genererLocalisations(race);
 });
@@ -1113,53 +1161,52 @@ function conditionsSante(cle, degats, pvMembre, pvMembreMax) {
         }
     } else if (degats >= 2 * pvMembreMax) {
         if (importLoca === "i") {
-            detruit[cle] = false;
             // membre inutilisable
-            contenuCondition[cle] = "Le membre est inutilisable.";
-            titreCondition[cle] = "Membre inutilisable";
+            detruit[cle] = false;
+            choc[cle] = true;
         } else {
+            // hemorragie
             detruit[cle] = false;
             ko[cle] = true;
-            // hemorragie
-            contenuCondition[cle] = "Vous vous videz de votre sang";
+            contenuCondition[cle] = "L'aventurier tombe inconscient et commence à perdre 1 point de vie par round à moins d'être traité ou de recevoir les Premiers soins.";
             titreCondition[cle] = "Blessure importante";
         }
     } else if (pvMembre <= -pvMembreMax) {
         if (importLoca === "i") {
+            // membre inutilisable
             detruit[cle] = false;
             ko[cle] = false;
-            // membre inutilisable
-            contenuCondition[cle] = "Le membre est inutilisable.";
+            contenuCondition[cle] = "Le membre est inutilisable. S'il s'agit d'une jambe l'aventurier s'effondre, il ne peut rien faire d'autre durant ce round. L'aventurier peut combattre au sol au cours des rounds suivants. Un aventurier com- battant au sol voit toutes ses chances d'attaque divisées par deux. Les chances de parade sont cependant inchangées. Quiconque combat un adversaire au sol bénéficie d'un bonus de +40 % à son attaque.";
             titreCondition[cle] = "Membre inutilisable";
         } else {
+            // hemorragie
             detruit[cle] = false;
             ko[cle] = true;
-            // hemorragie
-            contenuCondition[cle] = "Vous vous videz de votre sang";
+            contenuCondition[cle] = "L'aventurier tombe inconscient et commence à perdre 1 point de vie par round à moins d'être traité ou de recevoir les Premiers soins.";
             titreCondition[cle] = "Blessure importante";
         }
     } else if (pvMembre <= 0) {
         if (importLoca === "i") {
+            // membre inutilisable
             detruit[cle] = false;
             ko[cle] = false;
-            // membre inutilisable
-            contenuCondition[cle] = "Le membre est inutilisable.";
+            contenuCondition[cle] = "Le membre est inutilisable. S'il s'agit d'une jambe l'aventurier s'effondre, il ne peut rien faire d'autre durant ce round. L'aventurier peut combattre au sol au cours des rounds suivants. Un aventurier combattant au sol voit toutes ses chances d'attaque divisées par deux. Les chances de parade sont cependant inchangées. Quiconque combat un adversaire au sol bénéficie d'un bonus de +40 % à son attaque.";
             titreCondition[cle] = "Membre inutilisable";
         } else if (importLoca === "ik") {
+            // jambes inutilisables
             detruit[cle] = false;
             ko[cle] = false;
-            // jambes inutilisables
-            contenuCondition[cle] = "Vos jambes sont inutilisables.";
-            titreCondition[cle] = "Jambes inutilisables";
+            contenuCondition[cle] = "Les deux jambes sont inutilisables et l'aventurier tombe au sol. L'aventurier peut combattre au sol au cours des rounds suivants. Si l'aventurier dispose des moyens de se soigner lui-même par la magie ou via Premiers soins (cf. page 149), il peut le faire. S'il n'est pas traité ou ne reçoit pas les Premiers soins dans les dix minutes qui suivent, il mourra des suites de l'hémorragie.";
+            titreCondition[cle] = "Au sol et hémorragie";
         } else if (importLoca === "h") {
             detruit[cle] = false;
             ko[cle] = false;
-            contenuCondition[cle] = "Vous toussez du sang !";
+            contenuCondition[cle] = "L'aventurier tombe et est trop occupé à tousser et à cracher du sang pour faire quoi que ce soit. Il meurt d'hémorragie dans les dix minutes si le saignement n'est pas endigué par Premiers soins. L'aventurier ne peut pas agir, ni se soigner.";
             titreCondition[cle] = "hemorragie interne";
         } else {
             detruit[cle] = false;
             ko[cle] = true;
-            contenuCondition[cle] = "Vous sombrez dans l'inconscience";
+            contenuCondition[cle] = "l'aventurier est inconscient et doit être traité ou recevoir les Premiers soins dans les cinq minutes (un tour complet) ou mourir.";
             titreCondition[cle] = "Assomé";
         }
     } else if (pvMembre > 0){
@@ -1168,24 +1215,30 @@ function conditionsSante(cle, degats, pvMembre, pvMembreMax) {
         contenuCondition[cle] = "Tout va bien !";
         titreCondition[cle] = "Normal";
     }
+
     if (membreTranche[cle] == true) {
-        contenuCondition[cle] = "Ouch mauvais signe";
+        contenuCondition[cle] = "Le membre est tranché, estropié, et l'aventurier hors combat.";
         titreCondition[cle] = "Membre tranché";
+    } else if (choc[cle] == true) {
+        contenuCondition[cle] = "Ne peut plus combattre jusqu'à ce qu'il soit soigné et se trouve en état de choc. Il peut essayer de se soigner lui-même.";
+        titreCondition[cle] = "Membre inutilisable et choc";
     }
+
     if (oneShot[cle] == true) {
-        contenuCondition[cle] = "Il est toujours temps de prier";
+        contenuCondition[cle] = "L'aventurier meurt sur le coup.";
         titreCondition[cle] = "Mort sur le coup";
         detruit[cle] = true;
     }
 }
 
-// Fponction pour remettre à zéro les conditions des membres
+// Fonction pour remettre à zéro les conditions des membres
 function resetCondMembre() {
     for (let i = 0; i < 10; i++) {
         // Utilisation de l'index numérique i pour les objets detruit, ko, etc.
         detruit[i] = false;
         ko[i] = false;
         membreTranche[i] = false;
+        choc[i] = false;
     }
 }
 
@@ -1246,3 +1299,45 @@ function etendreModificateurs(baseMods, delta, steps) {
 
     return mods;
 }
+
+// Fonction de son
+function sound(son, classFlash) {
+    // Crée un élément div pour le flash
+    let flash = document.createElement("div");
+    flash.classList.add(classFlash);
+    // Ajoute l'effet de flash au body
+    document.body.appendChild(flash);
+    // Joue le son d'attaque
+    let sonDouleur = document.getElementById(son);
+    // Modifie le volume du son (par exemple, à 50% du volume maximum)
+    sonDouleur.volume = 0.5;
+    sonDouleur.play();
+    // Lance une transition pour faire disparaître le flash après 0.5s
+    setTimeout(function() {
+        flash.classList.add("fade-out");
+    }, 100);
+    // Supprime le flash de l'écran après l'animation
+    setTimeout(function() {
+        flash.remove();
+    }, 400); // 0.3s pour l'animation et 0.1s avant qu'elle commence
+}
+
+// Fonction pour afficher les durabilités de base des armes
+function affichDura(race) {
+    // Récupérer directement les données de la race en utilisant findRaceData
+    const raceData = findRaceData(race, raceDiceData);  
+    if (!raceData) {
+        console.log("Impossible de générer les localisations : les données de race ne sont pas définies.");
+        return;
+    }
+    for (let i = 0; i < 10; i++) {
+        durabilityKeys[i] = raceData[duraKeys[i]];
+        compKey[i] = raceData[compKeys[i]] + compCombat;
+    }
+}
+
+// Modification du titre de l'onglet en fonction du nom du perso
+document.getElementById("boutonNom").addEventListener("click", function () {
+    let nomPerso = document.getElementById("inpuText").value;
+    titreOnglet.textContent = nomPerso;
+})

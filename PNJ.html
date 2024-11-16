@@ -2,8 +2,9 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8" />
-    <title>Runequest-Gestion PNJ</title>
+    <title id="titreOnglet">Runequest-Gestion PNJ</title>
     <link rel="stylesheet" href="pnj.css">
+
 </head>
 <body>
     <audio id="atkSound" src="sonAtk.mp3"></audio>
@@ -18,6 +19,10 @@
     
     <section>
         <div>
+            <div id="enterName">
+                <input type="text" name="nom" value="" id="inpuText">
+                <button id="boutonNom">Valider nom</button>
+            </div>
             <form id="formRadio">
                 <p>Choisissez une option :</p>
                 
@@ -49,12 +54,7 @@
                   <input type="radio" name="option" value="option7">
                   Terreurs
                 </label>
-                <label>
-                  <input type="radio" name="option" value="option8">
-                  Flore
-                </label>
               </form>
-              
         </div>
         <div id="list">
             <label for="race">Choix de la race : </label>
@@ -178,6 +178,24 @@
                 </div>
                 <div id="resume">
                     <div>Résumé des blessures</div>
+                </div>
+            </div>
+
+            <div id="atkTableau">
+                <div id="arme" class="colonLoca">
+                    <div class="titreLoca">Arme</div>
+                </div>
+                <div id="pourcent" class="colonLoca">
+                    <div class="titreLoca">%</div>
+                </div>
+                <div id="degatArme" class="colonLoca">
+                    <div class="titreLoca">Dégâts</div>
+                </div>
+                <div id="ra" class="colonLoca">
+                    <div class="titreLoca">RA</div>
+                </div>
+                <div id="dura" class="colonLoca">
+                    <div class="titreLoca">Dura.</div>
                 </div>
             </div>
         </div>

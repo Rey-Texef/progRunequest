@@ -27,6 +27,7 @@ section {
 #tout {
     display: flex;
     width: 100%;
+    flex-wrap: wrap;
 }
 
 /* Titres de section */
@@ -198,10 +199,15 @@ h3 {
     background-color: #f0f0f0;
 }
 
-#tableLoca {
+#tableLoca, #atkTableau {
     margin-top: 50px;
     display: flex;
     flex-direction: row;
+}
+
+#atkTableau {
+    margin-left: 50px;
+    margin-top: 86px;
 }
 
 .colonLoca {
@@ -256,6 +262,26 @@ h3 {
     width: 100px;
 }
 
+#arme {
+    width: 150px;
+}
+
+#pourcent {
+    width: 70px;
+}
+
+#degatArme {
+    width: 150px;
+}
+
+#ra {
+    width: 70px;
+}
+
+#dura {
+    width: 70px;
+}
+
 .celLocaPlus input {
     width: 50px;    /* Ajuster la largeur */
     height: 25px;   /* Ajuster la hauteur */
@@ -282,9 +308,14 @@ h3 {
     position: absolute;
     background-color: rgba(0, 0, 0, 0.75);
     color: white;
+    width: 250px; /* Largeur maximale du cadre */
     padding: 5px 10px;
     border-radius: 5px;
-    white-space: nowrap;
+    text-align: center;
+    white-space: normal;
+    word-wrap: break-word; /* Casse les mots longs */
+    overflow-wrap: break-word; /* Compatibilité avec certains navigateurs */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none; /* Le tooltip ne gênera pas le survol */
@@ -292,12 +323,14 @@ h3 {
     left: 50%;
     transform: translateX(-50%, -50%);
     z-index: 10;
-    font-size: 0.9em;
+    font-size: 1em;
+    display: none; /* Masqué par défaut */
 }
 
 /* Afficher le tooltip lors du survol */
 .tooltip:hover::before {
     opacity: 1;
+    display: block;
 }
 
 #atk {
@@ -355,32 +388,39 @@ h3 {
 
 /* Style du modal (initialement caché) */
 .modal {
-    display: none; /* Cacher le modal par défaut */
-    position: fixed; /* Positionnement fixe */
-    z-index: 1; /* Pour rester au-dessus des autres éléments */
-    left: 0;
+    display: none; /* Masqué par défaut */
+    position: fixed; 
     top: 0;
-    width: 100%; /* Largeur de la page entière */
-    height: 100%; /* Hauteur de la page entière */
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
+    justify-content: center;
+    align-items: center;
 }
 
 /* Contenu du modal */
 .modal-content {
-    background-color: white;
-    margin: 15% auto; /* Centrer verticalement et horizontalement */
+    position: relative;
+    background-color: #fff;
+    width: 80%; /* Largeur de la modale (ajustable) */
+    max-width: 600px; /* Largeur maximale */
+    height: 90vh; /* Hauteur à 90% de l'écran */
+    overflow-y: auto; /* Barre de défilement verticale */
     padding: 20px;
-    border: 1px solid #888;
-    width: 30%; /* Largeur de la fenêtre */
-    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
 }
 
 /* Bouton de fermeture */
 .close {
-    color: red;
-    float: right;
-    font-size: 28px;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 24px;
     font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
 }
 
 .close:hover,
@@ -406,10 +446,28 @@ h3 {
 input[type="radio"] {
     accent-color: #4CAF50; /* Change la couleur de l'accent */
     margin-left: 30px;
-  }
+}
 
 #formRadio {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
 }
+
+#enterName {
+    display: flex;
+    align-items: center; /* Assure que les éléments sont centrés verticalement */
+    gap: 20px; /* Espace de 10px entre l'input et le bouton */
+}
+
+#inpuText, #boutonNom {
+    padding: 5px 10px; /* Ajuste le padding pour une hauteur plus uniforme */
+    box-sizing: border-box; /* Inclut padding et border dans la taille totale */
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+#inpuText {
+font-size: 16px;
+}
+
